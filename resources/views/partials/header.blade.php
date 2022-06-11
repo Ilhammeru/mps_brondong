@@ -1,7 +1,7 @@
 <!--begin::Header-->
 <div id="kt_header" class="header align-items-stretch">
     <!--begin::Brand-->
-    <div class="header-brand p-3">
+    <div class="header-brand p-3" style="background-color: #223453 !important;">
         <!--begin::Logo-->
         <a>
             <img alt="Logo" src="{{ asset('images/logo_mps_1.png') }}" class="h-75px h-lg-65px" />
