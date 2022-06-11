@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\DivisionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,3 +48,9 @@ Route::get('/password-email', function() {
 Route::get('/password-request', function() {
     return 'password request';
 })->name('password.request');
+
+Route::middleware(['auth'])->group(function() {
+    Route::get('/division/json', [DivisionController::class, 'json'])->name('division.json');
+    Route::resource('division', DivisionController::class);
+    Route::post('/division/{id}', [DivisionController::class, 'update'])->name('division.update');
+});
