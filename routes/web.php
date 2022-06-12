@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\DivisionController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PositionController;
+use App\Http\Controllers\RegionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,7 +53,27 @@ Route::get('/password-request', function() {
 })->name('password.request');
 
 Route::middleware(['auth'])->group(function() {
+    // begin::division
     Route::get('/division/json', [DivisionController::class, 'json'])->name('division.json');
+    Route::get('/division/get', [DivisionController::class, 'getData'])->name('division.getData');
     Route::resource('division', DivisionController::class);
     Route::post('/division/{id}', [DivisionController::class, 'update'])->name('division.update');
+    // end::division
+    
+    // begin::position
+    Route::get('/position/json', [PositionController::class, 'json'])->name('position.json');
+    Route::resource('position', PositionController::class);
+    Route::post('/position/{id}', [PositionController::class, 'update'])->name('position.update');
+    // end::position
+
+    // begin::employee
+    Route::get('/employee/json', [EmployeeController::class, 'json'])->name("employee.json");
+    Route::resource('employee', EmployeeController::class);
+    // end::employee
+
+    // begin::region
+    Route::get('/region/getRegency/{provinceId}', [RegionController::class, 'getRegency'])->name("region.getRegency");
+    Route::get('/region/getDistrict/{regencyId}', [RegionController::class, 'getDistrict'])->name("region.getDistrict");
+    Route::get('/region/getVillage/{districtId}', [RegionController::class, 'getVillage'])->name("region.getVillage");
+    // end::region
 });

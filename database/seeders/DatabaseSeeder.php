@@ -20,6 +20,13 @@ class DatabaseSeeder extends Seeder
             DivisionSeeder::class,
             PositionSeeder::class,
             UsersSeeder::class,
+            VaccineSeeder::class,
+            IndoRegionProvinceSeeder::class,
+            IndoRegionRegencySeeder::class,
+            IndoRegionDistrictSeeder::class,
+            IndoRegionVillageSeeder::class,
+            EmployeeSeeder::class,
+            EmployeeVaccineSeeder::class,
         ]);
     }
 }

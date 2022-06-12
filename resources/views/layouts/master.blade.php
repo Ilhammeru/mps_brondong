@@ -20,6 +20,16 @@
 	<link href="{{ asset('css/datatables.min.css') }}" rel="stylesheet" type="text/css" />
 	{{-- <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" type="text/css" /> --}}
 	<!--end::Page Vendor Stylesheets-->
+	<style>
+		.menu-link.active {
+			background-color: #eac170 !important;
+		}
+
+		.menu-link.active > .menu-title {
+			color: #0D203C !important;
+			font-weight: bold;
+		}
+	</style>
 	@stack('styles')
 
     {{-- <!-- Styles -->

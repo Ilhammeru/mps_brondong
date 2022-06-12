@@ -24,4 +24,19 @@ class Division extends Model
     {
         return $this->hasMany(User::class, 'division_id', 'id');
     }
+
+    public function position(): HasOne
+    {
+        return $this->hasOne(Division::class, 'division_id', 'id');
+    }
+
+    public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class, 'division_id', 'id');
+    }
+
+    public function employees(): HasMany
+    {
+        return $this->hasMany(Employee::class, 'division_id', 'id');
+    }
 }

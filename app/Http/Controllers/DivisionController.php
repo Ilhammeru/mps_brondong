@@ -19,8 +19,14 @@ class DivisionController extends Controller
         $pageTitle = 'Divisi';
         return view('division.index', compact('pageTitle'));
     }
-
-    public function json() {
+    
+    /**
+     * Get data for DataTable
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function json()
+    {
         $data = Division::all();
         return DataTables::of($data)
             ->editColumn('name',function($data) {
@@ -117,6 +123,16 @@ class DivisionController extends Controller
         } catch (\Throwable $th) {
             return sendResponse(['error' => $th->getMessage()], 'FAILED', 500);
         }
+    }
+    
+    /**
+     * Get all divsion data
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getData() {
+        $division = Division::all();
+        return sendResponse($division, 'SUCCESS', 201);        
     }
 
     /**
