@@ -96,3 +96,6 @@ Route::middleware(['auth', 'role:satpam'])->group(function() {
     Route::put('/leave-office/confirm/{id}', [PermissionLeaveOfficeController::class, 'confirm'])->name('leave-office.confirm');
     Route::get('/leave-office/json', [PermissionLeaveOfficeController::class, 'json'])->name('permission.leave-office.confirm.json');
 });
+
+Route::get('/leave-office/confirm/br/{id}', [PermissionLeaveOfficeController::class, 'confirmByBarcode'])->name('leave-office.confirm.barcode');
+Route::post('/leave-office/confirm/br/{id}', [PermissionLeaveOfficeController::class, 'confirmBarcode'])->name('leave-office.confirm.barcode.store');

@@ -8,7 +8,7 @@
                 <b>{{ $data->employee->employee_id }}</b>
             </p>
             <div class="qrcode d-flex align-items-center justify-content-center" style="margin: 20px 0 20px 0;">
-                {!! QrCode::size(250)->generate(url('/permission/leave-office/1')); !!}
+                {!! QrCode::size(250)->generate(url('/leave-office/confirm/br/' . $data->id)); !!}
             </div>
             <p class="mb-1">
                 <b>{{ date('d F Y H:i', strtotime($data->leave_date_time)) }}</b>

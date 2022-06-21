@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Division;
 use App\Models\Employee;
 use App\Models\PermissionLeaveOffice;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -79,17 +81,16 @@ class PermissionLeaveOfficeController extends Controller
                 return $date . ' (<b>' . $time . '</b>) ';
             })
             ->editColumn('approved_by', function($data) {
-                $user = Employee::select('name')->where('id', $data->approved_by)->first();
+                $user = User::select('name')->where('id', $data->approved_by)->first();
                 $name = $user->name;
                 $split = explode(' ', $name);
                 return ucwords($split[0]);
             })
             ->editColumn('checked_by', function($data) {
-                $user = Employee::select('name')->where('id', $data->checked_by)->first();
+                $user = User::select('name')->where('id', $data->checked_by)->first();
                 if ($user) {
                     $name = $user->name;
-                    $split = explode(' ', $name);
-                    return ucwords($split[0]);
+                    return ucwords($name);
                 } else {
                     return '-';
                 }
@@ -321,6 +322,67 @@ class PermissionLeaveOfficeController extends Controller
 
             sendEmail($data);
             return sendResponse($data);
+        } catch (\Throwable $th) {
+            return sendResponse(
+                ['error' => $th->getMessage()],
+                'FAILED',
+                500
+            );
+        }
+    }
+
+    public function confirmByBarcode($id) {
+        $data = PermissionLeaveOffice::find($id);
+        if ($data->checked_by) {
+            $checkedBy = User::find($data->checked_by);
+            return view('permission.leave-office.is-already-confirmed', compact('data', 'checkedBy'));
+        } else {
+            return view('permission.leave-office.confirm-barcode', compact('id'));
+        }
+    }
+
+    public function confirmBarcode(Request $request, $id) {
+        try {
+            $username = $request->username;
+            $password = $request->password;
+            $check = User::where('username', $username)->first();
+            if ($check) {
+                if (Hash::check($password, $check->password)) {
+                    $data = PermissionLeaveOffice::find($id);
+                    $data->checked_by = $check->id;
+                    $data->updated_at = Carbon::now();
+                    $data->save();
+
+                    $content = [
+                        'checkedBy' => $check->name,
+                        'employeeName' => Employee::select('name')->where('id', $data->employee_id)->first()->name,
+                        'data' => $data
+                    ];
+                    $data = [
+                        'subject' => 'confirm-leave-office',
+                        'receiver' => 'ranydesykurniasari@gmail.com',
+                        'receiver_name' => 'Rany Desy Kurniasari',
+                        'service' => 'confirm-leave-office',
+                        'content' => $content,
+                    ];
+        
+                    sendEmail($data);
+                } else {
+                    return sendResponse(
+                        ['error' => 'Username atau Password tidak sesuai'],
+                        'FAILED',
+                        500
+                    );
+                }
+            } else {
+                return sendResponse(
+                    ['error' => 'Username atau Password tidak sesuai'],
+                    'FAILED',
+                    500
+                );
+            }
+            
+            return sendResponse([]);
         } catch (\Throwable $th) {
             return sendResponse(
                 ['error' => $th->getMessage()],
