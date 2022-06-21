@@ -129,6 +129,9 @@
                     }
                     modal.modal('show');
                     $('#divisionId').html(option);
+                    $('#divisionId').select2({
+                        dropdownParent: $('#modalPosition')
+                    });
                     $('#modalTitle').text('Tambah Posisi');
                     form.attr('action', "{{ route('position.store') }}");
                     form.attr('method', 'POST');
