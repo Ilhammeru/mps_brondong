@@ -38,7 +38,7 @@ if (! function_exists('menuActive')) {
 }
 
 if (!function_exists('sendResponse')) {
-    function sendResponse($data, $message, $status) {
+    function sendResponse($data, $message = 'SUCCESS', $status = 201) {
         return response()->json([
             'data' => $data,
             'message' => $message
@@ -60,61 +60,6 @@ if (! function_exists('menuShow')) {
         } elseif (request()->routeIs($routeName)) {
             return $class;
         }
-    }
-}
-
-if (!function_exists('generateRandomString')) {
-    function generateRandomString($length = 8) {
-        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charsLength = strlen($chars);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $chars[rand(0, $charsLength - 1)];
-        }
-        return $randomString;
-    }
-}
-
-if (!function_exists('generateRandomNumber')) {
-    function generateRandomNumber($length = 6) {
-        $chars = '0123456789';
-        $charsLength = strlen($chars);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $chars[rand(0, $charsLength - 1)];
-        }
-        return $randomString;
-    }
-}
-
-if (!function_exists('generateRandomWallet')) {
-    function generateRandomWallet($length = 35) {
-        $chars = '0123456789abcdef';
-        $charsLength = strlen($chars);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $chars[rand(0, $charsLength - 1)];
-        }
-        return $randomString;
-    }
-}
-
-if (!function_exists('formatWA')) {
-    function formatWA($phone) {
-        $phone = preg_replace('/[\(\)\s.+-]/i', "", $phone);
-        if(!preg_match('/[^0-9]/', trim($phone))) {
-            if(substr(trim($phone), 0, 1) === '0'){
-                $phone = '62'.substr(trim($phone), 1);
-            }
-        }
-        return $phone;
-    }
-}
-
-if (!function_exists('formatRupiah')) {
-    function formatRupiah($number){
-    $result = "Rp " .number_format($number,0,',','.'). ",-";
-    return $result;
     }
 }
 
@@ -227,19 +172,25 @@ if (!function_exists('sendEmail')) {
             'new_prospect' => 'Prospect Baru',
             'paid_prospect_to_sponsor' => 'Aktivasi Prospek',
             'paid_prospect_to_prospect' => 'Aktivasi Akun',
-            'custom_email' => $data['custom_subject'] ?? ""
+            'custom_email' => $data['custom_subject'] ?? "",
+            'confirm-leave-office' => 'Izin Karyawan'
         ];
 
-        $setting = Setting::all();
-
         $config = [
-            'name' => $setting->where('name', 'email_name')->first()->value,
-            'email' => $setting->where('name', 'email_address')->first()->value,
-            'host' => $setting->where('name', 'email_host')->first()->value,
-            'port' => $setting->where('name', 'email_port')->first()->value,
-            'username' => $setting->where('name', 'email_username')->first()->value,
-            'password' => $setting->where('name', 'email_password')->first()->value,
-            'encryption' => $setting->where('name', 'email_encryption')->first()->value,
+            // 'name' => $setting->where('name', 'email_name')->first()->value,
+            'name' => 'MPS Brondong, KUD MINATANI',
+            // 'email' => $setting->where('name', 'email_address')->first()->value,
+            'email' => 'no-reply@mpsbrondong.com',
+            // 'host' => $setting->where('name', 'email_host')->first()->value,
+            'host' => 'smtp.gmail.com',
+            // 'port' => $setting->where('name', 'email_port')->first()->value,
+            'port' => 587,
+            // 'username' => $setting->where('name', 'email_username')->first()->value,
+            'username' => 'gumilang.dev@gmail.com',
+            // 'password' => $setting->where('name', 'email_password')->first()->value,
+            'password' => 'bkimlzkrndljfznm',
+            // 'encryption' => $setting->where('name', 'email_encryption')->first()->value,
+            'encryption' => 'tls'
         ];
 
         $mail = new PHPMailer(true);
@@ -275,30 +226,3 @@ if (!function_exists('sendEmail')) {
         return true;
     }
 }
-
-if (!function_exists('formatWhatsappNumber')) {
-    function formatWhatsappNumber($number) {
-        if ($number != NULL || $number != "") {
-            $split = str_split($number);
-            if ($split[0] == 0) {
-                $split[0] = '62';
-                $number = implode('', $split);
-            }
-        }
-        return $number;
-    }
-}
-
-
-// if (!function_exists('getUpline')) {
-
-//     function getUpline($userID)
-//     {
-//         if (!$userID) {
-//             return NULL;
-//         }
-//         $user = User::find($userID);
-//         $user->sponsor = getUpline($user->sponsor_id);
-//         return $user;
-//     }
-// }

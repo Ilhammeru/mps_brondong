@@ -78,15 +78,15 @@
 
 <!--begin::Card-->
 <div class="card mb-5">
-    <div class="card-body">
-        <div class="d-flex justify-content-end">
+    <div class="card-body p-3">
+        <div class="d-flex justify-content-start">
             <!--begin::Card toolbar-->
             <div class="card-toolbar">
                 <!--begin::Button-->
-                <a href="#" class="btn btn-light-primary">
+                <a href="{{ route('employee.index') }}" class="btn btn-light-primary">
                 <!--begin::Svg Icon | path: icons/duotune/general/gen035.svg-->
-                <i class="fas fa-sign-in-alt"></i>
-                <!--end::Svg Icon-->Login</a>
+                <i class="fas fa-chevron-left"></i>
+                <!--end::Svg Icon-->Kembali</a>
                 <!--end::Button-->
             </div>
             <!--end::Card toolbar-->
@@ -302,9 +302,9 @@
                     <tbody>
                         <tr>
                             <td>
-                                {{ $user->address }}</br>
-                                {{ $user->village->name . ', ' . $user->village->district->name . ', ' . $user->village->district->regency->name}}</br>
-                                {{ $user->village->district->regency->province->name }} </br>
+                                {{ $addressHelper != "" ? $addressHelper : '-' }}</br>
+                                {{ $villageHelper != "" ? $villageHelper : '-' }}</br>
+                                {{ $provinceHelper != "" ? $provinceHelper : '-' }} </br>
                                 65146
                             </td>
                         </tr>
@@ -332,52 +332,16 @@
                         <table class="table table-employee-detail">
                             <tbody>
                                 <tr>
-                                    <td style="width: 200px;">Nama Ayah</td>
-                                    <td><b>{{ strtoupper($user->father_name) }}</b></td>
+                                    <td style="width: 200px;">Nama Wali</td>
+                                    <td><b>{{ $user->wali_name == NULL ? '-' : strtoupper($user->wali_name) }}</b></td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 200px;">Nama Ibu</td>
-                                    <td><b>{{ strtoupper($user->mother_name) }}</b></td>
+                                    <td style="width: 200px;">Nomor Telfon Wali</td>
+                                    <td><b>{{ $user->wali_phone == NULL ? '-' : strtoupper($user->wali_phone) }}</b></td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 200px;">Alamat Ayah</td>
-                                    <td><b>{{ strtoupper($user->father_address) }}</b></td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 200px;">Alamat Ibu</td>
-                                    <td><b>{{ strtoupper($user->mother_address) }}</b></td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 200px;">Pekerjaan Ayah</td>
-                                    <td><b>{{ strtoupper($user->father_job) }}</b></td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 200px;">Pekerjaan Ibu</td>
-                                    <td><b>{{ strtoupper($user->mother_job) }}</b></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        {{-- end::table --}}
-                    </div>
-                    <div class="col-md-6 col-xl-6">
-                        {{-- begin::table --}}
-                        <table class="table table-employee-detail">
-                            <tbody>
-                                <tr>
-                                    <td style="width: 200px;">Kontak Darurat 1</td>
-                                    <td><b>{{ $user->emergency_contact_name_1 != NULL ? strtoupper($user->emergency_contact_name_1) . ' (' . $user->emergency_contact_number_1 . ')' : "-" }}</b></td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 200px;">Hubungan</td>
-                                    <td><b>{{ $user->emergency_contact_name_1 != NULL ? strtoupper($user->emergency_contact_siblings_1) : '-' }}</b></td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 200px;">Kontak Darurat 2</td>
-                                    <td><b>{{ $user->emergency_contact_name_2 != NULL ? strtoupper($user->emergency_contact_name_2) . ' (' . $user->emergency_contact_number_2 . ')' : "-" }}</b></td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 200px;">Hubungan</td>
-                                    <td><b>{{ $user->emergency_contact_name_2 != NULL ? strtoupper($user->emergency_contact_siblings_2) : "-" }}</b></td>
+                                    <td style="width: 200px;">Alamat Wali</td>
+                                    <td><b>{{ $user->wali_address == NULL ? '-' : strtoupper($user->wali_address) }}</b></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -416,15 +380,15 @@
                     <tbody>
                         <tr>
                             <td style="width: 200px;">Jenis Vaksin</td>
-                            <td><b>{{ strtoupper($user->userVaccine->vaccine->name) }}</b></td>
+                            <td><b>{{ $user->userVaccine == NULL ? '-' : strtoupper($user->userVaccine->vaccine->name) }}</b></td>
                         </tr>
                         <tr>
                             <td>Dosis I</td>
-                            <td><b>{!! $dosis1 != '' ? date('d F Y', strtotime($dosis1->vaccine_date)) : '<i class="fa fa-times"></i>' !!}</b></td>
+                            <td><b>{!! $dosis1 != '' ? date('d F Y', strtotime($dosis1->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
                         </tr>
                         <tr>
                             <td>Dosis II</td>
-                            <td><b>{!! $dosis2 != '' ? date('d F Y', strtotime($dosis2->vaccine_date)) : '<i class="fa fa-times"></i>' !!}</b></td>
+                            <td><b>{!! $dosis2 != '' ? date('d F Y', strtotime($dosis2->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
                         </tr>
                         <tr>
                             <td>Dosis III</td>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\District;
 use App\Models\Regency;
+use App\Models\Village;
 use Illuminate\Http\Request;
 
 class RegionController extends Controller
@@ -26,6 +27,7 @@ class RegionController extends Controller
 
     public function getVillage($districtId)
     {
-        
+        $village = Village::where('district_id', $districtId)->get();
+        return sendResponse($village);
     }
 }

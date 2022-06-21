@@ -21,13 +21,13 @@ return new class extends Migration
             $table->string('aliases')->nullable();
             $table->string('email')->email();
             $table->string('nik');
-            $table->string('gender', 1);
-            $table->date('birth_date');
-            $table->string('address');
-            $table->integer('province_id');
-            $table->string('regency_id');
-            $table->string('district_id');
-            $table->string('village_id');
+            $table->string('gender', 1)->nullable();
+            $table->date('birth_date')->nullable();
+            $table->string('address')->nullable();
+            $table->integer('province_id')->nullable();
+            $table->string('regency_id')->nullable();
+            $table->string('district_id')->nullable();
+            $table->string('village_id')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('phone')->nullable();
             $table->boolean('is_whatsapp')->default(FALSE);
@@ -55,29 +55,20 @@ return new class extends Migration
             $table->string('work_experience_position_3')->nullable();
             $table->string('work_experience_in_3')->nullable();
             $table->string('work_experience_out_3')->nullable();
-            $table->string('father_name')->nullable();
-            $table->string('mother_name')->nullable();
-            $table->string('father_job')->nullable();
-            $table->string('mother_job')->nullable();
-            $table->text('father_address')->nullable();
-            $table->text('mother_address')->nullable();
-            $table->text('emergency_contact_name_1')->nullable();
-            $table->text('emergency_contact_number_1')->nullable();
-            $table->text('emergency_contact_siblings_1')->nullable();
-            $table->text('emergency_contact_name_2')->nullable();
-            $table->text('emergency_contact_number_2')->nullable();
-            $table->text('emergency_contact_siblings_2')->nullable();
-            $table->tinyInteger('current_vaccine_level')->default(0); // tingkat vaksin terakhir 1/2/3/booster
-            $table->tinyInteger('employee_status')->nullable(); // this will be for 'contract' or 'permanent value'
+            $table->string('wali_name')->nullable();
+            $table->string('wali_phone')->nullable();
+            $table->text('wali_address')->nullable();
+            $table->integer('division_id');
+            $table->integer('position_id');
             $table->date('date_in_contract')->nullable();
             $table->date('date_in_permanent')->nullable();
             $table->text('contract_doc')->nullable();
             $table->text('permanent_doc')->nullable();
-            $table->integer('division_id');
-            $table->integer('position_id');
-            $table->string('bank_account_name');
-            $table->string('bank_account_number');
-            $table->string('bank_name');
+            $table->tinyInteger('employee_status')->nullable(); // this will be for 'contract' or 'permanent value'
+            $table->tinyInteger('current_vaccine_level')->default(0); // tingkat vaksin terakhir 1/2/3/booster
+            $table->string('bank_account_name')->nullable();
+            $table->string('bank_account_number')->nullable();
+            $table->string('bank_name')->nullable();
             $table->string('bpjs_ketenagakerjaan_number')->nullable();
             $table->string('bpjs_kesehatan_number')->nullable();
             $table->boolean('is_active')->default(TRUE);

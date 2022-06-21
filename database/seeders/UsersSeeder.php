@@ -30,6 +30,17 @@ class UsersSeeder extends Seeder
                 'start_working_date' => date('Y-m-d', strtotime('2021-10-01')),
                 'start_working_month' => date('m', strtotime('2021-10-01')),
                 'role' => 'admin'
+            ],
+            [
+                'name' => 'Pak Yit',
+                'email' => 'pakyit@gmail.com',
+                'username' => 'pakyit',
+                'password' => Hash::make('pakyit'),
+                'division_id' => 2,
+                'position_id' => 1,
+                'start_working_date' => date('Y-m-d', strtotime('2021-10-01')),
+                'start_working_month' => date('m', strtotime('2021-10-01')),
+                'role' => 'satpam'
             ]
         ];
 

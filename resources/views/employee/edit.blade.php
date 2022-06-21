@@ -28,7 +28,7 @@
     {{-- end::card --}}
 
     {{-- begin::form --}}
-    <form action="{{ route('employee.store') }}" method="POST" id="formEmployee">
+    <form action="{{ route('employee.update', $employee->id) }}" method="PUT" id="formEmployee">
         {{-- BEGIN::DATA-PERSONAL --}}
         <div class="accordion mb-5" id="accordionPersonalData">
             <div class="accordion-item">
@@ -42,38 +42,38 @@
                         <div class="form-group row mb-5">
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeName" class="col-form-label required">Nama</label>
-                                <input type="text" name="name" class="form-control" placeholder="Nama Karyawan" id="employeeName">
+                                <input type="text" name="name" value="{{ $employee->name }}" class="form-control" placeholder="Nama Karyawan" id="employeeName">
                             </div>  
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeAliases" class="col-form-label required">Nama Panggilan</label>
-                                <input placeholder="Nama Panggilan" type="text" name="aliases" class="form-control" id="employeeAliases">
+                                <input placeholder="Nama Panggilan" value="{{ $employee->aliases }}" type="text" name="aliases" class="form-control" id="employeeAliases">
                             </div>
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeNik" class="col-form-label required">NIK</label>
-                                <input type="number" name="nik" placeholder="NIK KTP" class="form-control" id="employeeNik">
+                                <input type="number" name="nik" value="{{ $employee->nik }}" placeholder="NIK KTP" class="form-control" id="employeeNik">
                             </div>
                         </div>
                         <div class="form-group row mb-5">
                             <div class="col-md-6 col-xl-6">
                                 <label for="employeeEmail" class="col-form-label required">Email</label>
-                                <input type="email" name="email" class="form-control" placeholder="Email Aktif Karyawan" id="employeeEmail">
+                                <input type="email" name="email" value="{{ $employee->email }}" class="form-control" placeholder="Email Aktif Karyawan" id="employeeEmail">
                             </div>
                             <div class="col-md-6 col-xl-6">
                                 <label for="employeePhone" class="col-form-label required   ">No. Telepon</label>
-                                <input type="number" name="phone" class="form-control" id="employeePhone" placeholder="No Telepon">
+                                <input type="number" name="phone" value="{{ $employee->phone }}" class="form-control" id="employeePhone" placeholder="No Telepon">
                             </div>
                         </div>
                         <div class="form-group row mb-5">
                             <div class="col-md-6 col-xl-6">
                                 <label for="employeeBirth" class="col-form-label">Tanggal Lahir</label>
-                                <input type="date" name="birth_date" class="form-control" id="employeeBirth">
+                                <input type="date" name="birth_date" value="{{ $employee->birth_date }}" class="form-control" id="employeeBirth">
                             </div>
                             <div class="col-md-6 col-xl-6">
                                 <label for="" class="col-form-label">Jenis Kelamin</label>
                                 <div class="row mt-2">
                                     <div class="col-6">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" value="L" name="gender" id="employeeGenderL">
+                                            <input class="form-check-input" {{ $employee->gender == 'L' ? 'checked' : '' }} type="radio" value="L" name="gender" id="employeeGenderL">
                                             <label class="form-check-label" for="employeeGenderL">
                                                 LAKI - LAKI
                                             </label>
@@ -81,7 +81,7 @@
                                     </div>
                                     <div class="col-6">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" value="P" name="gender" id="employeeGenderP">
+                                            <input class="form-check-input" {{ $employee->gender == 'P' ? 'checked' : '' }} type="radio" value="P" name="gender" id="employeeGenderP">
                                             <label class="form-check-label" for="employeeGenderP">
                                                 PEREMPUAN
                                             </label>
@@ -96,7 +96,7 @@
                                 <select name="province" class="form-select form-control" id="employeeProvince">
                                     <option value="">- Pilih Provinsi -</option>
                                     @foreach ($provinces as $province)
-                                        <option value="{{ $province->id }}">{{ $province->name }}</option>
+                                        <option {{ $employee->province_id == $province->id ? 'selected' : '' }} value="{{ $province->id }}">{{ $province->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -147,7 +147,7 @@
                                 <p class="mb-0" style="color: #A3A3A3;">ID Karyawan yang sudah ada sekarang</p>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" placeholder="ID Karyawan" class="form-control" id="employeeId" name="employee_id">
+                                <input type="text" value="{{ $employee->employee_id }}" placeholder="ID Karyawan" class="form-control" id="employeeId" name="employee_id">
                             </div>
                         </div>
                         <div class="form-group row" style="margin-bottom: 25px;">
@@ -159,7 +159,7 @@
                                 <select name="division_id" id="employeeDivision" class="form-select form-control">
                                     <option value="">- Pilih Divisi -</option>
                                     @foreach ($divisions as $division)
-                                        <option value="{{ $division->id }}">{{ $division->name }}</option>
+                                        <option {{ $employee->division_id == $division->id ? 'selected' : '' }} value="{{ $division->id }}">{{ $division->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -171,6 +171,10 @@
                             </div>
                             <div class="col-md-8">
                                 <select name="position_id" id="employeePosition" class="form-select form-control">
+                                    <option value="">- Pilih Posisi -</option>
+                                    @foreach ($position as $pos)
+                                        <option {{ $employee->position_id == $pos->id ? 'selected' : '' }} value="{{ $pos->id }}">{{ $pos->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -182,11 +186,11 @@
                             <div class="col-md-8">
                                 <select name="bank_name" id="bankName" class="form-control form-select">
                                     <option value="">- Pilih Bank -</option>
-                                    <option value="Mandiri">Mandiri</option>
-                                    <option value="BNI">BNI</option>
-                                    <option value="BCA">BCA</option>
-                                    <option value="BRI">BRI</option>
-                                    <option value="Permata">Permata</option>
+                                    <option {{ $employee->bank_name == 'Mandiri' ? 'selected' : '' }} value="Mandiri">Mandiri</option>
+                                    <option {{ $employee->bank_name == 'BNI' ? 'selected' : '' }} value="BNI">BNI</option>
+                                    <option {{ $employee->bank_name == 'BCA' ? 'selected' : '' }} value="BCA">BCA</option>
+                                    <option {{ $employee->bank_name == 'BRI' ? 'selected' : '' }} value="BRI">BRI</option>
+                                    <option {{ $employee->bank_name == 'Permata' ? 'selected' : '' }} value="Permata">Permata</option>
                                 </select>
                             </div>
                         </div>
@@ -195,7 +199,7 @@
                                 <label for="bankAccount" class="col-form-label p-0">Nomor Rekening Akun</label>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" placeholder="09921224444" name="bank_account" class="form-control" id="bankAccount">
+                                <input type="text" value="{{ $employee->bank_account_number }}" placeholder="09921224444" name="bank_account" class="form-control" id="bankAccount">
                             </div>
                         </div>
                         <div class="form-group row" style="margin-bottom: 25px;">
@@ -203,7 +207,7 @@
                                 <label for="bankAccountName" class="col-form-label p-0">Nama Pemilik Akun</label>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" placeholder="Richard Darados" name="bank_account_name" class="form-control" id="bankAccountName">
+                                <input type="text" value="{{ $employee->bank_account_name }}" placeholder="Richard Darados" name="bank_account_name" class="form-control" id="bankAccountName">
                             </div>
                         </div>
                     </div>
@@ -225,17 +229,17 @@
                         <div class="form-group row mb-5">
                             <div class="col-md-6 col-xl-6">
                                 <label for="employeeWali" class="col-form-label">Wali</label>
-                                <input placeholder="Nama Wali" type="text" class="form-control" name="wali" id="employeeWali">
+                                <input placeholder="Nama Wali" value="{{ $employee->wali_name }}" type="text" class="form-control" name="wali" id="employeeWali">
                             </div>
                             <div class="col-md-6 col-xl-6">
                                 <label for="employeeWaliPhone" class="col-form-label">Nomor Telfon Wali</label>
-                                <input type="number" placeholder="No Telepon Wali" class="form-control" name="wali_number" id="employeeWaliPhone">
+                                <input type="number" value="{{ $employee->wali_phone }}" placeholder="No Telepon Wali" class="form-control" name="wali_number" id="employeeWaliPhone">
                             </div>
                         </div>
                         <div class="form-group row mb-5">
                             <div class="col">
                                 <label for="employeeWaliAddress" class="col-form-label">Alamat Wali</label>
-                                <textarea name="wali_address" id="employeeWaliAddress" cols="3" rows="3" class="form-control"></textarea>
+                                <textarea name="wali_address" value="{{ $employee->wali_address }}" id="employeeWaliAddress" cols="3" rows="3" class="form-control"></textarea>
                             </div>
                         </div>
                     </div>
@@ -257,57 +261,57 @@
                         <div class="form-group mb-5 row">
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeePrimarySchool" class="col-form-label">Sekolah Dasar</label>
-                                <input type="text" name="primary_school" class="form-control" placeholder="Nama Sekolah Dasar" id="employeePrimarySchool">
+                                <input type="text" value="{{ $employee->primary_school }}" name="primary_school" class="form-control" placeholder="Nama Sekolah Dasar" id="employeePrimarySchool">
                             </div>
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeePrimaryGraduate" class="col-form-label">Tahun Lulus</label>
-                                <input type="month" name="primary_school_graduate" class="form-control" id="employeePrimaryGraduate">
+                                <input type="month" value="{{ $employee->primary_school_graduate }}" name="primary_school_graduate" class="form-control" id="employeePrimaryGraduate">
                             </div>
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeePrimaryGpa" class="col-form-label">Nilai Kelulusan</label>
-                                <input type="text" placeholder="Nilai Akhir" name="primary_school_gpa" class="form-control" id="employeePrimaryGpa">
+                                <input type="text" value="{{ $employee->primary_school_gpa }}" placeholder="Nilai Akhir" name="primary_school_gpa" class="form-control" id="employeePrimaryGpa">
                             </div>
                         </div>
                         <div class="form-group mb-5 row">
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeJuniorSchool" class="col-form-label">Sekolah Menengah Pertama</label>
-                                <input type="text" name="junior_high_school" class="form-control" placeholder="Nama Sekolah Menengah Pertama" id="employeeJuniorSchool">
+                                <input type="text" value="{{ $employee->junior_high_school }}" name="junior_high_school" class="form-control" placeholder="Nama Sekolah Menengah Pertama" id="employeeJuniorSchool">
                             </div>
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeJuniorGraduate" class="col-form-label">Tahun Lulus</label>
-                                <input type="month" name="junior_high_school_graduate" class="form-control" id="employeeJuniorGraduate">
+                                <input type="month" value="{{ $employee->junior_high_school_graduate }}" name="junior_high_school_graduate" class="form-control" id="employeeJuniorGraduate">
                             </div>
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeJuniorGpa" class="col-form-label">Nilai Kelulusan</label>
-                                <input type="text" placeholder="Nilai Akhir" name="junior_high_school_gpa" class="form-control" id="employeeJuniorGpa">
+                                <input type="text" value="{{ $employee->junior_high_school_gpa }}" placeholder="Nilai Akhir" name="junior_high_school_gpa" class="form-control" id="employeeJuniorGpa">
                             </div>
                         </div>
                         <div class="form-group mb-5 row">
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeHighSchool" class="col-form-label">Sekolah Menengah Atas</label>
-                                <input type="text" name="high_school" class="form-control" placeholder="Nama Sekolah Menengah Atas" id="employeeHighSchool">
+                                <input type="text" value="{{ $employee->high_school }}" name="high_school" class="form-control" placeholder="Nama Sekolah Menengah Atas" id="employeeHighSchool">
                             </div>
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeHighGraduate" class="col-form-label">Tahun Lulus</label>
-                                <input type="month" name="high_school_graduate" class="form-control" id="employeeHighGraduate">
+                                <input type="month" value="{{ $employee->high_school_graduate }}" name="high_school_graduate" class="form-control" id="employeeHighGraduate">
                             </div>
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeHighGpa" class="col-form-label">Nilai Kelulusan</label>
-                                <input type="text" placeholder="Nilai Akhir" name="high_school_gpa" class="form-control" id="employeeHighGpa">
+                                <input type="text" value="{{ $employee->high_school_gpa }}" placeholder="Nilai Akhir" name="high_school_gpa" class="form-control" id="employeeHighGpa">
                             </div>
                         </div>
                         <div class="form-group mb-5 row">
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeUniversity" class="col-form-label">Universitas</label>
-                                <input type="text" name="university" class="form-control" placeholder="Nama Universitas" id="employeeUniversity">
+                                <input type="text" value="{{ $employee->university }}" name="university" class="form-control" placeholder="Nama Universitas" id="employeeUniversity">
                             </div>
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeUniversityGraduate" class="col-form-label">Tahun Lulus</label>
-                                <input type="month" name="university_graduate" class="form-control" id="employeeUniversityGraduate">
+                                <input type="month" value="{{ $employee->university_graduate }}" name="university_graduate" class="form-control" id="employeeUniversityGraduate">
                             </div>
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeUniversityGpa" class="col-form-label">Nilai Kelulusan</label>
-                                <input type="text" placeholder="Nilai Akhir" name="university_gpa" class="form-control" id="employeeUniversityGpa">
+                                <input type="text" value="{{ $employee->university_gpa }}" placeholder="Nilai Akhir" name="university_gpa" class="form-control" id="employeeUniversityGpa">
                             </div>
                         </div>
                     </div>
@@ -334,19 +338,19 @@
                         <div class="form-group row mb-5">
                             <div class="col-md-4">
                                 <label for="employeeExperience1" class="col-form-label">Nama Tempat Bekerja</label>
-                                <input type="text" name="work_experience_name_1" placeholder="Nama Kantor" class="form-control" id="employeeExperience1">
+                                <input type="text" value="{{ $employee->work_experience_name_1 }}" name="work_experience_name_1" placeholder="Nama Kantor" class="form-control" id="employeeExperience1">
                             </div>
                             <div class="col-md-4">
                                 <label for="employeeExperiencePosition1" class="col-form-label">Posisi Terakhir</label>
-                                <input type="text" name="work_experience_position_1" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperiencePosition1">
+                                <input type="text" value="{{ $employee->work_experience_position_1 }}" name="work_experience_position_1" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperiencePosition1">
                             </div>
                             <div class="col-md-2">
                                 <label for="employeeExperienceIn1" class="col-form-label">Tahun Masuk</label>
-                                <input type="month" name="work_experience_in_1" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperienceIn1">
+                                <input type="month" value="{{ $employee->work_experience_in_1 }}" name="work_experience_in_1" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperienceIn1">
                             </div>
                             <div class="col-md-2">
                                 <label for="employeeExperienceOut1" class="col-form-label">Tahun Keluar</label>
-                                <input type="month" name="work_experience_out_1" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperienceOut1">
+                                <input type="month" value="{{ $employee->work_experience_out_1 }}" name="work_experience_out_1" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperienceOut1">
                             </div>
                         </div>
 
@@ -358,19 +362,19 @@
                         <div class="form-group row mb-5">
                             <div class="col-md-4">
                                 <label for="employeeExperience2" class="col-form-label">Nama Tempat Bekerja</label>
-                                <input type="text" name="work_experience_name_2" placeholder="Nama Kantor" class="form-control" id="employeeExperience2">
+                                <input type="text" value="{{ $employee->work_experience_name_2 }}" name="work_experience_name_2" placeholder="Nama Kantor" class="form-control" id="employeeExperience2">
                             </div>
                             <div class="col-md-4">
                                 <label for="employeeExperiencePosition2" class="col-form-label">Posisi Terakhir</label>
-                                <input type="text" name="work_experience_position_2" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperiencePosition2">
+                                <input type="text" value="{{ $employee->work_experience_position_2 }}" name="work_experience_position_2" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperiencePosition2">
                             </div>
                             <div class="col-md-2">
                                 <label for="employeeExperienceIn2" class="col-form-label">Tahun Masuk</label>
-                                <input type="month" name="work_experience_in_2" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperienceIn2">
+                                <input type="month" value="{{ $employee->work_experience_in_2 }}" name="work_experience_in_2" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperienceIn2">
                             </div>
                             <div class="col-md-2">
                                 <label for="employeeExperienceOut2" class="col-form-label">Tahun Keluar</label>
-                                <input type="month" name="work_experience_out_2" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperienceOut2">
+                                <input type="month" value="{{ $employee->work_experience_out_2 }}" name="work_experience_out_2" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperienceOut2">
                             </div>
                         </div>
 
@@ -382,19 +386,19 @@
                         <div class="form-group row mb-5">
                             <div class="col-md-4">
                                 <label for="employeeExperience3" class="col-form-label">Nama Tempat Bekerja</label>
-                                <input type="text" name="work_experience_name_3" placeholder="Nama Kantor" class="form-control" id="employeeExperience3">
+                                <input type="text" value="{{ $employee->work_experience_name_3 }}" name="work_experience_name_3" placeholder="Nama Kantor" class="form-control" id="employeeExperience3">
                             </div>
                             <div class="col-md-4">
                                 <label for="employeeExperiencePosition3" class="col-form-label">Posisi Terakhir</label>
-                                <input type="text" name="work_experience_position_3" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperiencePosition3">
+                                <input type="text" value="{{ $employee->work_experience_position_3 }}" name="work_experience_position_3" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperiencePosition3">
                             </div>
                             <div class="col-md-2">
                                 <label for="employeeExperienceIn3" class="col-form-label">Tahun Masuk</label>
-                                <input type="month" name="work_experience_in_3" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperienceIn3">
+                                <input type="month" value="{{ $employee->work_experience_in_3 }}" name="work_experience_in_3" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperienceIn3">
                             </div>
                             <div class="col-md-2">
                                 <label for="employeeExperienceOut3" class="col-form-label">Tahun Keluar</label>
-                                <input type="month" name="work_experience_out_3" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperienceOut3">
+                                <input type="month" value="{{ $employee->work_experience_out_3 }}" name="work_experience_out_3" placeholder="Jabatan Terkahir" class="form-control" id="employeeExperienceOut3">
                             </div>
                         </div>
                     </div>
@@ -419,13 +423,13 @@
                                 <select name="vaccine_type_1" id="employeeVaccineType" class="form-select form-control">
                                     <option value="">- Pilih Jenis Vaksin -</option>
                                     @foreach ($vaccines as $vaccine)
-                                        <option value="{{ $vaccine->id }}">{{ $vaccine->name }}</option>
+                                        <option {{ $vaccineId1 != '' ? ($vaccineId1 == $vaccine->id ? 'selected' : '') : '' }} value="{{ $vaccine->id }}">{{ $vaccine->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeVaccineDate" class="col-form-label">Tanggal Vaksin</label>
-                                <input type="date" name="vaccine_date_1" class="form-control" id="employeeVaccineDate">
+                                <input type="date" value="{{ $vaccineDate1 }}" name="vaccine_date_1" class="form-control" id="employeeVaccineDate">
                             </div>
                         </div>
                         <div class="form-group mb-5 row">
@@ -434,13 +438,13 @@
                                 <select name="vaccine_type_2" id="employeeVaccineType2" class="form-select form-control">
                                     <option value="">- Pilih Jenis Vaksin -</option>
                                     @foreach ($vaccines as $vaccine)
-                                        <option value="{{ $vaccine->id }}">{{ $vaccine->name }}</option>
+                                        <option {{ $vaccineId2 != '' ? ($vaccineId2 == $vaccine->id ? 'selected' : '') : '' }} value="{{ $vaccine->id }}">{{ $vaccine->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeVaccineDate2" class="col-form-label">Tanggal Vaksin</label>
-                                <input type="date" name="vaccine_date_2" class="form-control" id="employeeVaccineDate2">
+                                <input type="date" value="{{ $vaccineDate2 }}" name="vaccine_date_2" class="form-control" id="employeeVaccineDate2">
                             </div>
                         </div>
                         <div class="form-group mb-5 row">
@@ -449,13 +453,13 @@
                                 <select name="vaccine_type_3" id="employeeVaccineType3" class="form-select form-control">
                                     <option value="">- Pilih Jenis Vaksin -</option>
                                     @foreach ($vaccines as $vaccine)
-                                        <option value="{{ $vaccine->id }}">{{ $vaccine->name }}</option>
+                                        <option {{ $vaccineId3 != '' ? ($vaccineId3 == $vaccine->id ? 'selected' : '') : '' }} value="{{ $vaccine->id }}">{{ $vaccine->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-md-4 col-xl-4">
                                 <label for="employeeVaccineDate3" class="col-form-label">Tanggal Vaksin</label>
-                                <input type="date" name="vaccine_date_3" class="form-control" id="employeeVaccineDate3">
+                                <input type="date" value="{{ $vaccineDate3 }}" name="vaccine_date_3" class="form-control" id="employeeVaccineDate3">
                             </div>
                         </div>
                     </div>
@@ -487,7 +491,8 @@
 
         $('#employeeProvince').select2();
         $('#bankName').select2();
-        $('#employeeDivision').select2();
+        $('#employeeDivision').select2(); 
+        $('#employeePosition').select2(); 
         $('#employeeVaccineType3').select2();
         $('#employeeVaccineType2').select2();
         $('#employeeVaccineType').select2();
@@ -599,8 +604,7 @@
                         message: 'Karyawan berhasil di simpan',
                         position: "topRight"
                     });
-                    document.getElementById('formEmployee').reset();
-                    window.location.href = "{{ route('employee.index') }}";
+                    window.location.href = "{{ route('employee.index') }}"; 
                 },
                 error: function(err) {
                     handleError(err, elem);

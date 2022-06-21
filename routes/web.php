@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PermissionLeaveOfficeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\RegionController;
+use App\Models\PermissionLeaveOffice;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,7 +54,7 @@ Route::get('/password-request', function() {
     return 'password request';
 })->name('password.request');
 
-Route::middleware(['auth'])->group(function() {
+Route::middleware(['auth', 'role:admin'])->group(function() {
     // begin::division
     Route::get('/division/json', [DivisionController::class, 'json'])->name('division.json');
     Route::get('/division/get', [DivisionController::class, 'getData'])->name('division.getData');
@@ -62,11 +64,14 @@ Route::middleware(['auth'])->group(function() {
     
     // begin::position
     Route::get('/position/json', [PositionController::class, 'json'])->name('position.json');
+    Route::get('/position/getData/{id}', [PositionController::class, 'getData'])->name('position.getData');
     Route::resource('position', PositionController::class);
     Route::post('/position/{id}', [PositionController::class, 'update'])->name('position.update');
     // end::position
 
     // begin::employee
+    Route::get('/employee/getData', [EmployeeController::class, 'getData'])->name("employee.getData");
+    Route::get('/employee/getDivision/{id}', [EmployeeController::class, 'getDivision'])->name("employee.getDivision");
     Route::get('/employee/json', [EmployeeController::class, 'json'])->name("employee.json");
     Route::resource('employee', EmployeeController::class);
     // end::employee
@@ -76,4 +81,18 @@ Route::middleware(['auth'])->group(function() {
     Route::get('/region/getDistrict/{regencyId}', [RegionController::class, 'getDistrict'])->name("region.getDistrict");
     Route::get('/region/getVillage/{districtId}', [RegionController::class, 'getVillage'])->name("region.getVillage");
     // end::region
+
+    // begin::permission
+    Route::prefix('permission')->group(function() {
+        Route::get('/leave-office/detail/{id}', [PermissionLeaveOfficeController::class, 'detail'])->name("leave-office.detail");
+        Route::get('leave-office/json', [PermissionLeaveOfficeController::class, 'json'])->name('permission.leave-office.json');
+        Route::resource('leave-office', PermissionLeaveOfficeController::class);
+    });
+    // end::permission
+});
+
+Route::middleware(['auth', 'role:satpam'])->group(function() {
+    Route::get('/leave-office', [PermissionLeaveOfficeController::class, 'showConfirm'])->name('leave-office.confirm.index');
+    Route::put('/leave-office/confirm/{id}', [PermissionLeaveOfficeController::class, 'confirm'])->name('leave-office.confirm');
+    Route::get('/leave-office/json', [PermissionLeaveOfficeController::class, 'json'])->name('permission.leave-office.confirm.json');
 });

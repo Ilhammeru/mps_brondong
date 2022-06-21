@@ -30,6 +30,24 @@ class PositionController extends Controller
     {
         //
     }
+
+    /**
+     * Get Position By Division ID
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function getData($id) {
+        try {
+            $data = Position::where('division_id', $id)->get();
+            return sendResponse($data);
+        } catch (\Throwable $th) {
+            return sendResponse(
+                ['error' => $th->getMessage()],
+                'FAILED',
+                500
+            );
+        }
+    }
     
     /**
      * Get data for DataTable

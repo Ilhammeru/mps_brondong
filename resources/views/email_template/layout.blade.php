@@ -20,9 +20,10 @@
                         </tr>
                         <tr style="background-color:#e0e0e0;height:120px;">
                             <td style="padding:50px 30px;">
-                                <p style="text-align:center;font-size:1.2em;margin:0px;padding:0px;margin-bottom:15px;font-weight:bold;">{{ $setting->where('name', 'company_name')->first()->value }}</p>
-                                <p style="text-align:center;padding:0px;"><?= str_replace('<br />', ', ', nl2br( $setting->where('name', 'company_address')->first()->value)) ?></p>
-                                <p style="text-align:center;padding:0px;">&copy;<?= date('Y'); ?> - <a href="{{ url('/') }}">{{ $setting->where('name', 'app_name')->first()->value }}</a></p>
+                                <p style="text-align:center;font-size:1.2em;margin:0px;padding:0px;margin-bottom:15px;font-weight:bold;">MPS Brondong, KUD Mintani</p>
+                                {{-- <p style="text-align:center;padding:0px;"><?= str_replace('<br />', ', ', nl2br( $setting->where('name', 'company_address')->first()->value)) ?></p> --}}
+                                <p style="text-align:center;padding:0px;">Jl. Alamat Kantor</p>
+                                <p style="text-align:center;padding:0px;">&copy;<?= date('Y'); ?> - <a href="{{ url('/') }}">Personalia App</a></p>
                             </td>
                         </tr>
                     </tbody>

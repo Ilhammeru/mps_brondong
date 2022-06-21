@@ -108,8 +108,97 @@
                         <span class="menu-section text-muted text-uppercase fs-8 ls-1">Apps</span>
                     </div>
                 </div>
+                @if (Auth::user()->role != 'satpam')
+                    <div class="menu-item">
+                        <a class="menu-link {{ menuActive('dashboard') }}" href="{{ route('dashboard') }}">
+                            <span class="menu-icon">
+                                <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
+                                <span class="svg-icon svg-icon-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <rect x="2" y="2" width="9" height="9" rx="2" fill="black" />
+                                        <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black" />
+                                        <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black" />
+                                        <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black" />
+                                    </svg>
+                                </span>
+                                <!--end::Svg Icon-->
+                            </span>
+                            <span class="menu-title">Dashboard</span>
+                        </a>
+                    </div>
+
+                    {{-- begin::u --}}
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ menuShow(['division.index', 'position.index', 'employee.*']) }}">
+                        <span class="menu-link">
+                            <span class="menu-icon">
+                                <!--begin::Svg Icon | path: icons/duotune/finance/fin006.svg-->
+                                <i class="fas fa-sitemap"></i>
+                                <!--end::Svg Icon-->
+                            </span>
+                            <span class="menu-title">Personalia</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ menuActive('division.index') }}" href="{{ route('division.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">Divisi</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ menuActive('position.index') }}" href="{{ route('position.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">Posisi</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ menuActive('employee.*') }}" href="{{ route('employee.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">Karyawan</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- end::user management --}}
+
+                    {{-- begin::permission --}}
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ menuShow(['leave-office.*']) }}">
+                        <span class="menu-link">
+                            <span class="menu-icon">
+                                <!--begin::Svg Icon | path: icons/duotune/finance/fin006.svg-->
+                                <i class="fas fa-sitemap"></i>
+                                <!--end::Svg Icon-->
+                            </span>
+                            <span class="menu-title">Perizinan</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ menuActive('leave-office.index') }}" href="{{ route('leave-office.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">Izin Keluar Kantor</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- end::permission --}}
+                @endif
+                
+                @if (Auth::user()->role == 'satpam')
                 <div class="menu-item">
-                    <a class="menu-link {{ menuActive('dashboard') }}" href="{{ route('dashboard') }}">
+                    <a class="menu-link {{ menuActive('leave-office.confirm.index') }}" href="{{ route('leave-office.confirm.index') }}">
                         <span class="menu-icon">
                             <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                             <span class="svg-icon svg-icon-2">
@@ -122,52 +211,10 @@
                             </span>
                             <!--end::Svg Icon-->
                         </span>
-                        <span class="menu-title">Dashboard</span>
+                        <span class="menu-title">Izin Keluar Kantor</span>
                     </a>
                 </div>
-                {{-- begin::u --}}
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ menuShow(['division.index', 'position.index', 'employee.*']) }}">
-                    <span class="menu-link">
-                        <span class="menu-icon">
-                            <!--begin::Svg Icon | path: icons/duotune/finance/fin006.svg-->
-                            <i class="fas fa-sitemap"></i>
-                            <!--end::Svg Icon-->
-                        </span>
-                        <span class="menu-title">Personalia</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ menuActive('division.index') }}" href="{{ route('division.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Divisi</span>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ menuActive('position.index') }}" href="{{ route('position.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Posisi</span>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="menu-sub menu-sub-accordion">
-                        <div class="menu-item">
-                            <a class="menu-link {{ menuActive('employee.*') }}" href="{{ route('employee.index') }}">
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Karyawan</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {{-- end::user management --}}
+                @endif
             </div>
             <!--end::Menu-->
         </div>
