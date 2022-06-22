@@ -61,13 +61,16 @@ class PermissionLeaveOfficeController extends Controller
     public function json() {
         $role = Auth::user()->role;
         if ($role != 'satpam') {
-            $data = PermissionLeaveOffice::with('employee')->get();
+            $data = PermissionLeaveOffice::with('employee')->orderBy('id', 'desc')->get();
         } else if ($role == 'satpam') {
-            $data = PermissionLeaveOffice::where('checked_by', null)->get();
+            $data = PermissionLeaveOffice::where('checked_by', null)->orderBy('id', 'desc')->get();
         }
         return DataTables::of($data)
+            ->editColumn('id', function($data) {
+                return '<span style="color: transparent;">{{ $data->id }}</span>';
+            })
             ->addColumn('employee', function($data) {
-                return '<span onclick="detail('. $data->id .')" style="color: #009ef7;">'. ucwords($data->employee->name) .'</span>';
+                return '<span onclick="detail('. $data->id .')" style="color: #009ef7; cursor:pointer;">'. ucwords($data->employee->name) .'</span>';
             })
             ->addColumn('division', function($data) {
                 $division = $data->division->name;
@@ -97,13 +100,20 @@ class PermissionLeaveOfficeController extends Controller
             })
             ->addColumn('action', function($data) use($role) {
                 if ($role != 'satpam') {
-                    return '<span class="text-info me-4" onclick="edit('. $data->id .')"><i class="fas fa-edit"></i></span>
-                        <span class="text-info" onclick="deleteLeave('. $data->id .')"><i class="fas fa-trash"></i></span>';
+                    if ($data->checked_by) {
+                        return '<span class="text-info" onclick="edit('. $data->id .')" style="cursor:pointer;"><i class="fas fa-edit"></i></span>
+                            <span class="text-info"><i class="fas fa-check text-success"></i></span>
+                            <span class="text-info" onclick="detail('. $data->id .')" style="cursor:pointer;"><i class="fas fa-print"></i></span>';
+                    } else {
+                        return '<span class="text-info" onclick="edit('. $data->id .')" style="cursor:pointer;"><i class="fas fa-edit"></i></span>
+                            <span class="text-info" onclick="deleteLeave('. $data->id .')" style="cursor:pointer;"><i class="fas fa-trash"></i></span>
+                            <span class="text-info" onclick="detail('. $data->id .')" onclick="deleteLeave('. $data->id .')" style="cursor:pointer;"><i class="fas fa-print"></i></span>';
+                    }
                 } else {
-                    return '<span class="text-info me-4" id="btnCheck'. $data->id .'" onclick="confirm('. $data->id .')" style="cursor:pointer;"><i class="fas fa-check text-success"></i></span>';
+                    return '<span class="text-info me-2" id="btnCheck'. $data->id .'" onclick="confirm('. $data->id .')" style="cursor:pointer;"><i class="fas fa-check text-success"></i></span>';
                 }
             })
-            ->rawColumns(['employee', 'division', 'date_time', 'approved_by', 'checked_by', 'action'])
+            ->rawColumns(['employee', 'division', 'date_time', 'approved_by', 'checked_by', 'action', 'id'])
             ->make(true);
     }
 

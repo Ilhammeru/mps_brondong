@@ -7,7 +7,7 @@
                         <tr>
                             <th style="text-align:center;padding:20px 15px;height:72px;">
                                 <a href="{{ url('/') }}">
-                                    <img src="{{ asset('images/logo-1.svg') }}" border="0" />
+                                    <img src="{{ asset('images/logo_mps_1.png') }}" border="0" style="width: 150px; hegiht: auto;" />
                                 </a>
                             </th>
                         </tr>

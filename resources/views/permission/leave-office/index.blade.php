@@ -56,6 +56,7 @@
                 <thead>
                     <!--begin::Table row-->
                     <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                        <th></th>
                         <th>Nama</th>
                         <th>Divisi</th>
                         <th>Waktu Keluar</th>
@@ -184,13 +185,19 @@
 @push('scripts')
     <script>
         var _columns = [{
+            data: "id",
+            width: "0.5%",
+            orderable: false
+        },{
             data: "employee"
         }, {
             data: "division"
         }, {
-            data: "date_time"
+            data: "date_time",
+            width: "15%"
         }, {
-            data: "notes"
+            data: "notes",
+            width: "20%"
         }, {
             data: "approved_by"
         }, {
@@ -204,6 +211,7 @@
             processing: true,
             serverSide: true,
             scrollX: true,
+            order: [[ 0, "desc" ]],
             ajax: "{{ route('permission.leave-office.json') }}",
             columns: _columns,
         });
@@ -259,7 +267,9 @@
                     }
                     modal.modal('show');
                     $('#employeeName').html(option);
-                    $('#employeeName').select2();
+                    $('#employeeName').select2({
+                        dropdownParent: $('#modalLeaveOffice')
+                    });
                     $('#modalTitle').text('Tambah Data Izin');
                     form.attr('action', "{{ route('leave-office.store') }}");
                     form.attr('method', 'POST');

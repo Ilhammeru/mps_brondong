@@ -144,7 +144,7 @@
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                                    <span class="menu-title">Divisi</span>
+                                    <span class="menu-title">Department</span>
                                 </a>
                             </div>
                         </div>
@@ -154,7 +154,7 @@
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                                    <span class="menu-title">Posisi</span>
+                                    <span class="menu-title">Jabatan</span>
                                 </a>
                             </div>
                         </div>
