@@ -70,7 +70,7 @@ class PermissionLeaveOfficeController extends Controller
                 return '<span style="color: transparent;">{{ $data->id }}</span>';
             })
             ->addColumn('employee', function($data) {
-                return '<span onclick="detail('. $data->id .')" style="color: #009ef7; cursor:pointer;">'. ucwords($data->employee->name) .'</span>';
+                return '<span>'. ucwords($data->employee->name) .'</span>';
             })
             ->addColumn('division', function($data) {
                 $division = $data->division->name;

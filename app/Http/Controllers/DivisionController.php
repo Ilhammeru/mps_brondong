@@ -16,7 +16,7 @@ class DivisionController extends Controller
      */
     public function index()
     {
-        $pageTitle = 'Divisi';
+        $pageTitle = 'Department';
         return view('division.index', compact('pageTitle'));
     }
     
