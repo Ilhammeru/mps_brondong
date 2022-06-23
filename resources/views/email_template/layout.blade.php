@@ -22,8 +22,8 @@
                             <td style="padding:50px 30px;">
                                 <p style="text-align:center;font-size:1.2em;margin:0px;padding:0px;margin-bottom:15px;font-weight:bold;">MPS Brondong, KUD Mintani</p>
                                 {{-- <p style="text-align:center;padding:0px;"><?= str_replace('<br />', ', ', nl2br( $setting->where('name', 'company_address')->first()->value)) ?></p> --}}
-                                <p style="text-align:center;padding:0px;">Jl. Alamat Kantor</p>
-                                <p style="text-align:center;padding:0px;">&copy;<?= date('Y'); ?> - <a href="{{ url('/') }}">Personalia App</a></p>
+                                <p style="text-align:center;padding:0px;">Jl. Raya Tuban - Gresik KM 21 Desa Sedayulawas Kecamatan Brondong, Kabupaten Lamongan (62263)</p>
+                                <p style="text-align:center;padding:0px;">&copy;<?= date('Y'); ?> - <a href="{{ url('/') }}">HRD App</a></p>
                             </td>
                         </tr>
                     </tbody>

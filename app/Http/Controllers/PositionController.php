@@ -17,7 +17,7 @@ class PositionController extends Controller
      */
     public function index()
     {
-        $pageTitle = 'Posisi';
+        $pageTitle = 'Jabatan';
         return view('position.index', compact('pageTitle'));
     }
 
