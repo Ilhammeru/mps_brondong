@@ -128,7 +128,7 @@
                     </div>
 
                     {{-- begin::u --}}
-                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ menuShow(['division.index', 'position.index', 'employee.*']) }}">
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ menuShow(['division.index', 'position.index', 'employee.*', 'organization-structure.*']) }}">
                         <span class="menu-link">
                             <span class="menu-icon">
                                 <!--begin::Svg Icon | path: icons/duotune/finance/fin006.svg-->
@@ -145,6 +145,16 @@
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">Department</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ menuActive('organization-structure.*') }}" href="{{ route('organization-structure.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">Struktur Organisasi</span>
                                 </a>
                             </div>
                         </div>

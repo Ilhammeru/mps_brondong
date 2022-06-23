@@ -27,6 +27,8 @@ class DatabaseSeeder extends Seeder
             IndoRegionVillageSeeder::class,
             EmployeeSeeder::class,
             EmployeeVaccineSeeder::class,
+            DepartmentSeeder::class,
+            EmployeeStatusSeeder::class
         ]);
     }
 }

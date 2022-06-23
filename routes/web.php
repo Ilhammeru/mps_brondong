@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\OrganizationStructureController;
 use App\Http\Controllers\PermissionLeaveOfficeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\RegionController;
@@ -61,6 +63,10 @@ Route::middleware(['auth', 'role:admin'])->group(function() {
     Route::resource('division', DivisionController::class);
     Route::post('/division/{id}', [DivisionController::class, 'update'])->name('division.update');
     // end::division
+
+    // begin::department
+    Route::get('/department/json', [DepartmentController::class, 'json'])->name('department.json');
+    // end::department
     
     // begin::position
     Route::get('/position/json', [PositionController::class, 'json'])->name('position.json');
@@ -89,6 +95,10 @@ Route::middleware(['auth', 'role:admin'])->group(function() {
         Route::resource('leave-office', PermissionLeaveOfficeController::class);
     });
     // end::permission
+
+    // begin::organization-structure
+    Route::get('/organization-structure/index', [OrganizationStructureController::class, 'index'])->name('organization-structure.index');
+    // end::organization-structure
 });
 
 Route::middleware(['auth', 'role:satpam'])->group(function() {
