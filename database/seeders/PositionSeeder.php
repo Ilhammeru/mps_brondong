@@ -19,7 +19,9 @@ class PositionSeeder extends Seeder
         Position::truncate();
 
         $position = [
-            ['name' => 'SPV']
+            ['name' => 'SPV', 'division_id' => 1, 'created_at' => Carbon::now()],
+            ['name' => 'SPV', 'division_id' => 2, 'created_at' => Carbon::now()],
+            ['name' => 'People Development', 'division_id' => 2, 'created_at' => Carbon::now()],
         ];
 
         Position::insert($position);

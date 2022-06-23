@@ -3,6 +3,7 @@
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeeStatusController;
 use App\Http\Controllers\OrganizationStructureController;
 use App\Http\Controllers\PermissionLeaveOfficeController;
 use App\Http\Controllers\PositionController;
@@ -66,7 +67,12 @@ Route::middleware(['auth', 'role:admin'])->group(function() {
 
     // begin::department
     Route::get('/department/json', [DepartmentController::class, 'json'])->name('department.json');
+    Route::post('/department/store', [DepartmentController::class, 'store'])->name('department.store');
     // end::department
+
+    // begin::employee status
+    Route::get('/employee-status/json', [EmployeeStatusController::class, 'json'])->name('employee-status.json');
+    // end::employee status
     
     // begin::position
     Route::get('/position/json', [PositionController::class, 'json'])->name('position.json');
@@ -98,7 +104,9 @@ Route::middleware(['auth', 'role:admin'])->group(function() {
 
     // begin::organization-structure
     Route::get('/organization-structure/index', [OrganizationStructureController::class, 'index'])->name('organization-structure.index');
-    // end::organization-structure
+    Route::get('/organization-structure/add-department', [OrganizationStructureController::class, 'addDepartment'])->name('organization-structure.addDepartment');
+    Route::get('/organization-structure/add-division', [OrganizationStructureController::class, 'addDivision'])->name('organization-structure.addDivision');
+;    // end::organization-structure
 });
 
 Route::middleware(['auth', 'role:satpam'])->group(function() {

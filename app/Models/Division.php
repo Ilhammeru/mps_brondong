@@ -30,6 +30,11 @@ class Division extends Model
         return $this->hasOne(Division::class, 'division_id', 'id');
     }
 
+    public function department():BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'department_id', 'id');
+    }
+
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, 'division_id', 'id');

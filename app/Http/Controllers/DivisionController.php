@@ -32,6 +32,9 @@ class DivisionController extends Controller
             ->editColumn('name',function($data) {
                 return ucwords($data->name);
             })
+            ->editColumn('department_id', function($data) {
+                return ucwords($data->department->name);
+            })
             ->addColumn('action', function($data) {
                 return '<span class="text-info" style="cursor: pointer;" onclick="edit('. $data->id .')"><i class="fas fa-edit"></i></span>
                 <span class="text-info" style="cursor: pointer;" onclick="deleteDivision('. $data->id .')"><i class="fas fa-trash"></i></span>';
@@ -58,15 +61,16 @@ class DivisionController extends Controller
      */
     public function store(Request $request)
     {
-        $name = strtolower($request->name);
+        $name = $request->name;
+        $departmentId = $request->department_id;
         $payload = [
-            'name' => $name
+            'name' => $name,
+            'department_id' => $departmentId,
+            'created_at' => Carbon::now()
         ];
 
         try {
-            $division = Division::updateOrCreate(
-                $payload, ['created_at' => Carbon::now()]
-            );
+            $division = Division::insert($payload);
             return sendResponse($division, 'SUCCESS', 201);
         } catch (\Throwable $th) {
             return sendResponse(['error' => $th->getMessage()], 'FAILED', 500);

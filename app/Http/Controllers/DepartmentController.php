@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -51,7 +52,18 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $name = $request->name;
+        $payload = [
+            'name' => $name
+        ];
+        try {
+            Department::updateOrCreate(
+                $payload, ['created_at' => Carbon::now()]
+            );
+            return sendResponse([]);
+        } catch (\Throwable $th) {
+            return sendResponse(['error' => $th->getMessage()], 'FAILED', 500);
+        }
     }
 
     /**
