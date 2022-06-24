@@ -63,7 +63,7 @@ class PermissionLeaveOfficeController extends Controller
         if ($role != 'satpam') {
             $data = PermissionLeaveOffice::with('employee')->orderBy('id', 'desc')->get();
         } else if ($role == 'satpam') {
-            $data = PermissionLeaveOffice::where('checked_by', null)->orderBy('id', 'desc')->get();
+            $data = PermissionLeaveOffice::where('checked_by', null)->where('employee_id', '!=', Auth::user()->employee_id)->orderBy('id', 'desc')->get();
         }
         return DataTables::of($data)
             ->editColumn('id', function($data) {
@@ -82,6 +82,13 @@ class PermissionLeaveOfficeController extends Controller
                 $date = date('d F Y', strtotime($data->leave_date_time));
                 $time = date('H:i:s', strtotime($data->leave_date_time));
                 return $date . ' (<b>' . $time . '</b>) ';
+            })
+            ->addColumn('status', function($data) {
+                if ($data->checked_by) {
+                    return '<span class="badge badge-success">Sudah Diizinkan</span>';
+                } else {
+                    return '<span class="badge badge-secondary">Belum Diizinkan</span>';
+                }
             })
             ->editColumn('approved_by', function($data) {
                 $user = User::select('name')->where('id', $data->approved_by)->first();
@@ -102,7 +109,6 @@ class PermissionLeaveOfficeController extends Controller
                 if ($role != 'satpam') {
                     if ($data->checked_by) {
                         return '<span class="text-info" onclick="edit('. $data->id .')" style="cursor:pointer;"><i class="fas fa-edit"></i></span>
-                            <span class="text-info"><i class="fas fa-check text-success"></i></span>
                             <span class="text-info" onclick="detail('. $data->id .')" style="cursor:pointer;"><i class="fas fa-print"></i></span>';
                     } else {
                         return '<span class="text-info" onclick="edit('. $data->id .')" style="cursor:pointer;"><i class="fas fa-edit"></i></span>
@@ -113,7 +119,7 @@ class PermissionLeaveOfficeController extends Controller
                     return '<span class="text-info me-2" id="btnCheck'. $data->id .'" onclick="confirm('. $data->id .')" style="cursor:pointer;"><i class="fas fa-check text-success"></i></span>';
                 }
             })
-            ->rawColumns(['employee', 'division', 'date_time', 'approved_by', 'checked_by', 'action', 'id'])
+            ->rawColumns(['employee', 'division', 'date_time', 'approved_by', 'checked_by', 'action', 'id', 'status'])
             ->make(true);
     }
 
@@ -305,7 +311,9 @@ class PermissionLeaveOfficeController extends Controller
 
     public function showConfirm() {
         $pageTitle = 'Data Izin Keluar Kantor';
-        $data = PermissionLeaveOffice::where('checked_by', null)->get();
+        $data = PermissionLeaveOffice::where('checked_by', null)
+            ->where('employee_id', '!=', Auth::id())
+            ->get();
 
         return view('permission.leave-office.confirm', compact('data', 'pageTitle'));
     }
@@ -359,6 +367,15 @@ class PermissionLeaveOfficeController extends Controller
             if ($check) {
                 if (Hash::check($password, $check->password)) {
                     $data = PermissionLeaveOffice::find($id);
+                    if ($check->employee_id == $data->employee_id) {
+                        if ($check->role != 'admin') {
+                            return sendResponse(
+                                ['error' => 'Anda Tidak Bisa Mengizinkan Diri Anda Sendiri'],
+                                'FAILED',
+                                500
+                            );
+                        }
+                    }
                     $data->checked_by = $check->id;
                     $data->updated_at = Carbon::now();
                     $data->save();
@@ -393,6 +410,27 @@ class PermissionLeaveOfficeController extends Controller
             }
             
             return sendResponse([]);
+        } catch (\Throwable $th) {
+            return sendResponse(
+                ['error' => $th->getMessage()],
+                'FAILED',
+                500
+            );
+        }
+    }
+
+    public function detailLeaveOffice($id)
+    {
+        try {
+            $data = PermissionLeaveOffice::with([
+                    'employee', 'approvedBy', 'checkedBy'
+                ])
+                ->where('employee_id', $id)
+                ->get();
+                
+            $view = view('permission.leave-office._detail-leave', compact('data'))->render();
+    
+            return sendResponse(['view' => $view]);
         } catch (\Throwable $th) {
             return sendResponse(
                 ['error' => $th->getMessage()],

@@ -7,6 +7,8 @@ use App\Models\Division;
 use App\Models\Employee;
 use App\Models\EmployeeStatus;
 use App\Models\EmployeeVaccine;
+use App\Models\MenstruationLeave;
+use App\Models\PermissionLeaveOffice;
 use App\Models\Position;
 use App\Models\Province;
 use App\Models\Regency;
@@ -119,9 +121,17 @@ class EmployeeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function getData() {
-        $id = Auth::id();
-        $data = Employee::where(['is_active' => 1])->where('id', '!=', $id)->get();
-        return sendResponse($data);
+        try {
+            $id = Auth::id();
+            $data = Employee::where(['is_active' => 1])->where('id', '!=', $id)->get();
+            return sendResponse($data);
+        } catch (\Throwable $th) {
+            return sendResponse(
+                ['error' => $th->getMessage()],
+                'FAILED',
+                500
+            );
+        }
     }
 
     /**
@@ -360,11 +370,15 @@ class EmployeeController extends Controller
             $provinceHelper = $user->village->district->regency->province->name;
             $addressHelper = $user->address;
         }
+        $permissionLeaveOffice = PermissionLeaveOffice::where('employee_id', $id)
+            ->count();
+        $leaveMenstruation = MenstruationLeave::where('employee_id', $id)
+            ->count();
         return view('employees.profile', compact(
             'user', 'pageTitle', 'userVaccine',
             'dosis1', 'dosis2', 'dosis3', 'addressHelper',
-            'villageHelper', 'provinceHelper'
-
+            'villageHelper', 'provinceHelper', 'permissionLeaveOffice',
+            'leaveMenstruation'
         ));
     }
 

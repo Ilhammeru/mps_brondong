@@ -395,31 +395,52 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLeaveOffice" aria-expanded="true" aria-controls="collapseLeaveOffice">
-                        <h3>Izin Keluar Kantor</h3>
+                        <h3>Izin Karyawan </h3>
                     </button>
                 </h2>
                 <div id="collapseLeaveOffice" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionPermissionLeaveOffice">
                     <div class="accordion-body">
-                        <table class="table table-employee-detail">
-                            <tbody>
-                                <tr>
-                                    <td style="width: 200px;">Jenis </td>
-                                    <td><b>{{ $user->userVaccine == NULL ? '-' : strtoupper($user->userVaccine->vaccine->name) }}</b></td>
-                                </tr>
-                                <tr>
-                                    <td>Dosis I</td>
-                                    <td><b>{!! $dosis1 != '' ? date('d F Y', strtotime($dosis1->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
-                                </tr>
-                                <tr>
-                                    <td>Dosis II</td>
-                                    <td><b>{!! $dosis2 != '' ? date('d F Y', strtotime($dosis2->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
-                                </tr>
-                                <tr>
-                                    <td>Dosis III</td>
-                                    <td><b>{!! $dosis3 != '' ? date('d F Y', strtotime($dosis3->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="row">
+                            <div class="col-md-9">
+                                <table class="table table-employee-detail">
+                                    <tbody>
+                                        <tr>
+                                            <td>Cuti Haid</td>
+                                            <td>:</td>
+                                            <td>
+                                                <b>{{ $leaveMenstruation == 0 ? '-' : $leaveMenstruation }}x dalam bulan berjalan</b>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Cuti Tahunan</td>
+                                            <td>:</td>
+                                            <td>
+                                                <b>-</b>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Cuti Melahirkan</td>
+                                            <td>:</td>
+                                            <td>
+                                                <b>-</b>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Izin Meninggalkan Kantor</td>
+                                            <td>:</td>
+                                            <td>
+                                                <b>{{ $permissionLeaveOffice == 0 ? '-' : $permissionLeaveOffice }}</b>
+                                            </td>
+                                            @if ($permissionLeaveOffice > 0)
+                                                <td class="d-flex">
+                                                    <i class="fas fa-info" style="font-size: 10px; cursor: pointer; color: #009ef7;" onclick="detailLeave({{ $user->id }})"></i>
+                                                </td>
+                                            @endif
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -428,17 +449,15 @@
 </div>
 {{-- end::accordion --}}
 
-<div class="modal fade" id="userImageModal" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade" id="modalLeaveOffice" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
-            <div class="modal-body pb-5">
-                <div class="image-cropper">
-                    <div id="userImageCropper" style="width: 320px; height: 320px;"></div>
-                </div>
+            <div class="modal-header">
+                <h5 class="modal-title">Detail</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary" data-toggle="upload-image" data-username="userusername">Terapkan</button>
+            <div class="modal-body" id="targetDetailLeaveOffice">
+
             </div>
         </div>
     </div>
@@ -455,6 +474,40 @@
         FilePond.registerPlugin(FilePondPluginImagePreview);
         const userImage = document.getElementById('userImage');
         const pond = FilePond.create(userImage);
+
+        function detailLeave(id) {
+            $.ajax({
+                type: "GET",
+                url: "{{ url('/employees/detail/leave-office') }}" + "/" + id,
+                dataType: "json",
+                success: function(res) {
+                    console.log(res);
+                    let view = res.data.view;
+                    $('#targetDetailLeaveOffice').html(view);
+                    $('#modalLeaveOffice').modal('show');
+                },
+                error: function(err) {
+                    handleError(err);
+                }
+            })
+        }
+
+        function detailLeaveMenstruation(id) {
+            $.ajax({
+                type: "GET",
+                url: "{{ url('/employees/detail/leave-menstruation') }}" + "/" + id,
+                dataType: "json",
+                success: function(res) {
+                    console.log(res);
+                    let view = res.data.view;
+                    $('#targetDetailLeaveOffice').html(view);
+                    $('#modalLeaveOffice').modal('show');
+                },
+                error: function(err) {
+                    handleError(err);
+                }
+            })
+        }
     </script>
 @endpush
 

@@ -1,4 +1,19 @@
 @extends('layouts.master')
+@push('styles')
+    <style>
+        .sectionCardLeave {
+            position: relative;
+            z-index: 100;
+        }
+        
+        .deleteSectionLeave {
+            position: absolute;
+            top: -10px;
+            right: -5px;
+            z-index: 101;
+        }
+    </style>
+@endpush
 {{-- begin::section --}}
 @section('content')
     {{-- begin::card-action --}}
@@ -61,6 +76,7 @@
                         <th>Divisi</th>
                         <th>Waktu Keluar</th>
                         <th>Alasan Keluar</th>
+                        <th>Status</th>
                         <th>Persetujuan</th>
                         <th>Satpam</th>
                         <th></th>
@@ -81,85 +97,96 @@
 
     {{-- begin::modal --}}
     <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modalLeaveOffice">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalTitle"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="" id="formLeaveOffice">
-                    <div class="modal-body">
-                        <div class="form-group mb-5 row">
-                            <div class="col-md-4 d-flex justify-content-start align-items-center">
-                                <div>
-                                    <label for="" class="col-form-label p-0">Data Karyawan</label>
-                                    <p class="mb-0" style="color: #A3A3A3;">
-                                        Pilih Nama Karyawan. <br> Divisi dan Posisi akan otomatis terisi
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <label for="employeeName" class="col-form-label">Nama</label>
-                                        <select name="employee" id="employeeName" class="form-select form-control" onchange="changeEmployee()"></select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="divisionId" class="col-form-label">Divisi</label>
-                                        <input id="divisionName" readonly class="form-control" />
-                                        <input name="division_id" hidden id="divisionId" readonly class="form-control" />
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="positionId" class="col-form-label">Posisi</label>
-                                        <input readonly id="positionName" class="form-control" />
-                                        <input name="position_id" hidden id="positionId" readonly class="form-control" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group mb-5 row" style="margin-top: 30px;">
-                            <div class="col-md-4">
-                                <label for="" class="col-form-label p-0">Tanggal / Jam Izin</label>
-                                <p class="mb-0" style="color: #A3A3A3;">
-                                    Jam dalam format <b>24 jam</b> dan tidak boleh di awali dengan angka '0'
-                                </p>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <input type="date" class="form-control" id="leaveDate" name="date">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="input-group mb-3">
-                                            <input type="number" class="form-control" name="hour" id="leaveHour" placeholder="Jam" aria-label="Username">
-                                            <span class="input-group-text">:</span>
-                                            <input type="number" class="form-control" placeholder="Menit" id="leaveMinute" name="minute" aria-label="Server">
+                <div class="modal-body">
+                    <form action="" id="formLeaveOffice">
+                        <div class="sectionCardLeave">
+                            {{-- <span class="deleteSectionLeave"><i class="fas fa-times text-danger fa-2x"></i></span> --}}
+                            <div class="row mb-5">
+                                <div class="col">
+                                    <div class="card card-flush bg-secondary">
+                                        <div class="card-body">
+                                            <div class="form-group mb-5 row">
+                                                <div class="col-md-4 d-flex justify-content-start align-items-center">
+                                                    <div>
+                                                        <label for="" class="col-form-label p-0">Data Karyawan</label>
+                                                        <p class="mb-0" style="color: #A3A3A3;">
+                                                            Pilih Nama Karyawan. <br> Divisi dan Posisi akan otomatis terisi
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <label for="employeeName" class="col-form-label">Nama</label>
+                                                            <select name="employee" id="employeeName" class="form-select form-control" onchange="changeEmployee()"></select>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="divisionId" class="col-form-label">Divisi</label>
+                                                            <input id="divisionName" readonly class="form-control" />
+                                                            <input name="division_id" hidden id="divisionId" readonly class="form-control" />
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="positionId" class="col-form-label">Posisi</label>
+                                                            <input readonly id="positionName" class="form-control" />
+                                                            <input name="position_id" hidden id="positionId" readonly class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-5 row" style="margin-top: 30px;">
+                                                <div class="col-md-4">
+                                                    <label for="" class="col-form-label p-0">Tanggal / Jam Izin</label>
+                                                    <p class="mb-0" style="color: #A3A3A3;">
+                                                        Jam dalam format <b>24 jam</b> dan tidak boleh di awali dengan angka '0'
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <input type="date" class="form-control" id="leaveDate" name="date">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="input-group mb-3">
+                                                                <input type="number" class="form-control" name="hour" id="leaveHour" placeholder="Jam" aria-label="Username">
+                                                                <span class="input-group-text">:</span>
+                                                                <input type="number" class="form-control" placeholder="Menit" id="leaveMinute" name="minute" aria-label="Server">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-5 row" style="margin-top: 30px;">
+                                                <div class="col-md-4">
+                                                    <label for="" class="col-form-label p-0">Alasan Izin</label>
+                                                    <p class="mb-0" style="color: #A3A3A3;">
+                                                        Alasan karyawan meninggalkan kantor
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <textarea name="notes" id="notes" cols="3" rows="3" class="form-control"></textarea>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group mb-5 row" style="margin-top: 30px;">
-                            <div class="col-md-4">
-                                <label for="" class="col-form-label p-0">Alasan Izin</label>
-                                <p class="mb-0" style="color: #A3A3A3;">
-                                    Alasan karyawan meninggalkan kantor
-                                </p>
-                            </div>
-                            <div class="col-md-8">
-                                <textarea name="notes" id="notes" cols="3" rows="3" class="form-control"></textarea>
-                            </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="form-group row">
+                        <div class="col">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button class="btn btn-primary" id="btnSave" onclick="save()" type="button">Simpan</button>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <div class="form-group row">
-                            <div class="col">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                                <button class="btn btn-primary" id="btnSave" onclick="save()" type="button">Simpan</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -198,7 +225,9 @@
             width: "15%"
         }, {
             data: "notes",
-            width: "20%"
+            width: "15%"
+        }, {
+            data: "status"
         }, {
             data: "approved_by"
         }, {
@@ -274,6 +303,9 @@
                     $('#modalTitle').text('Tambah Data Izin');
                     form.attr('action', "{{ route('leave-office.store') }}");
                     form.attr('method', 'POST');
+                },
+                error: function(err) {
+                    handleError(err);
                 }
             });
         });

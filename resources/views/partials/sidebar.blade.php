@@ -136,7 +136,7 @@
                         <span class="menu-link">
                             <span class="menu-icon">
                                 <!--begin::Svg Icon | path: icons/duotune/finance/fin006.svg-->
-                                <i class="fas fa-sitemap"></i>
+                                <i class="fas fa-people-arrows"></i>
                                 <!--end::Svg Icon-->
                             </span>
                             <span class="menu-title">Personalia</span>
@@ -170,7 +170,7 @@
                         <span class="menu-link">
                             <span class="menu-icon">
                                 <!--begin::Svg Icon | path: icons/duotune/finance/fin006.svg-->
-                                <i class="fas fa-sitemap"></i>
+                                <i class="far fa-envelope"></i>
                                 <!--end::Svg Icon-->
                             </span>
                             <span class="menu-title">Perizinan</span>
@@ -183,6 +183,30 @@
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">Izin Keluar Kantor</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- end::permission --}}
+
+                    {{-- begin::permission --}}
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ menuShow(['leave-menstruation.*']) }}">
+                        <span class="menu-link">
+                            <span class="menu-icon">
+                                <!--begin::Svg Icon | path: icons/duotune/finance/fin006.svg-->
+                                <i class="fas fa-sign-out-alt"></i>
+                                <!--end::Svg Icon-->
+                            </span>
+                            <span class="menu-title">Cuti</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a class="menu-link {{ menuActive('leave-menstruation.*') }}" href="{{ route('leave-menstruation.index') }}">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">Cuti Haid</span>
                                 </a>
                             </div>
                         </div>
@@ -206,6 +230,23 @@
                             <!--end::Svg Icon-->
                         </span>
                         <span class="menu-title">Izin Keluar Kantor</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a class="menu-link {{ menuActive('leave-menstruation.confirm.index') }}" href="{{ route('leave-menstruation.confirm.index') }}">
+                        <span class="menu-icon">
+                            <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
+                            <span class="svg-icon svg-icon-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect x="2" y="2" width="9" height="9" rx="2" fill="black" />
+                                    <rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black" />
+                                    <rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black" />
+                                    <rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black" />
+                                </svg>
+                            </span>
+                            <!--end::Svg Icon-->
+                        </span>
+                        <span class="menu-title">Cuti Haid</span>
                     </a>
                 </div>
                 @endif
