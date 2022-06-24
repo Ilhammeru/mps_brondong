@@ -98,7 +98,7 @@ class MenstruationLeaveController extends Controller
     public function create()
     {
         $pageTitle = "Tambah Data Cuti Haid";
-        $employees = Employee::where('id', '!=', Auth::id())->get();
+        $employees = Employee::where('id', '!=', Auth::id())->where('gender', 'P')->get();
         return view('permission.leave-menstruation.create', compact('pageTitle', 'employees'));
     }
 
