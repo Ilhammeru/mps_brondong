@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Division;
+use App\Models\EmployeeStatus;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
-class DivisionController extends Controller
+class EmployeeStatusController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,10 +17,9 @@ class DivisionController extends Controller
      */
     public function index()
     {
-        $pageTitle = 'Department';
-        return view('division.index', compact('pageTitle'));
+        //
     }
-    
+
     /**
      * Get data for DataTable
      *
@@ -28,16 +27,13 @@ class DivisionController extends Controller
      */
     public function json()
     {
-        $data = Division::all();
+        $data = EmployeeStatus::all();
         return DataTables::of($data)
             ->editColumn('name',function($data) {
                 return ucwords($data->name);
             })
-            ->editColumn('department_id', function($data) {
-                return ucwords($data->department->name);
-            })
             ->addColumn('action', function($data) {
-                $param = $data->id . ", 'division'";
+                $param = $data->id . ", 'employeeStatus'";
                 return '<span class="text-info" style="cursor: pointer;" onclick="edit('. $param .')"><i class="fas fa-edit"></i></span>
                 <span class="text-info" style="cursor: pointer;" onclick="deleteItem('. $param .')"><i class="fas fa-trash"></i></span>';
             })
@@ -63,17 +59,10 @@ class DivisionController extends Controller
      */
     public function store(Request $request)
     {
-        $name = $request->name;
-        $departmentId = $request->department_id;
-        $rules = [
-            'name' => 'required'
-        ];
         $validation = Validator::make(
             $request->all(),
-            $rules,
-            [
-                'name.required' => 'Nama Harus Diisi'
-            ]
+            ['name' => 'required'],
+            ['name.required' => 'Nama Harus Diisi']
         );
         if ($validation->fails()) {
             $error = $validation->errors()->all();
@@ -83,15 +72,15 @@ class DivisionController extends Controller
                 500
             );
         }
+        $name = $request->name;
         $payload = [
-            'name' => $name,
-            'department_id' => $departmentId,
-            'created_at' => Carbon::now()
+            'name' => $name
         ];
-
         try {
-            $division = Division::insert($payload);
-            return sendResponse($division, 'SUCCESS', 201);
+            EmployeeStatus::updateOrCreate(
+                $payload, ['created_at' => Carbon::now()]
+            );
+            return sendResponse([]);
         } catch (\Throwable $th) {
             return sendResponse(['error' => $th->getMessage()], 'FAILED', 500);
         }
@@ -100,26 +89,21 @@ class DivisionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\EmployeeStatus  $employeeStatus
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(EmployeeStatus $employeeStatus)
     {
-        try {
-            $division = Division::find($id);
-            return sendResponse($division, 'SUCCESS', 201);
-        } catch (\Throwable $th) {
-            return sendResponse(['error' => $th->getMessage()], 'FAILED', 500);
-        }
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\EmployeeStatus  $employeeStatus
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(EmployeeStatus $employeeStatus)
     {
         //
     }
@@ -128,26 +112,20 @@ class DivisionController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\EmployeeStatus  $employeeStatus
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $division = Division::find($id);
-        $name = $request->name;
-        $rules = [
-            'name' => 'required'
-        ];
-        if (strtolower($division->name) != $name) {
-            $rules['name'] = 'required|unique:divisions,name';
+        $employeeStatus = EmployeeStatus::find($id);
+        $rules = ['name' => 'required'];
+        if (strtolower($employeeStatus->name) != strtolower($request->name)) {
+            $rules['name'] = 'required|unique:employee_status,name';
         }
         $validation = Validator::make(
             $request->all(),
             $rules,
-            [
-                'name.required' => 'Nama Harus Diisi',
-                'name.unique' => 'Nama Sudah Terdaftar di Database'
-            ]
+            ['name.required' => 'Nama Harus Diisi', 'name.unique' => 'Nama Sudah Terdaftar di Database']
         );
         if ($validation->fails()) {
             $error = $validation->errors()->all();
@@ -157,47 +135,40 @@ class DivisionController extends Controller
                 500
             );
         }
-
         try {
-            $division->name = $name;
-            $division->department_id = $request->department_id;
-            $division->updated_at = Carbon::now();
-            $division->save();
+            $employeeStatus->name = $request->name;
+            $employeeStatus->updated_at = Carbon::now();
+            $employeeStatus->save();
+
             return sendResponse([]);
         } catch (\Throwable $th) {
-            return sendResponse(['error' => $th->getMessage()], 'FAILED', 500);
+            return sendResponse(
+                ['error' => $th->getMessage()],
+                'FAILED',
+                500
+            );
         }
-    }
-    
-    /**
-     * Get all divsion data
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function getData() {
-        $division = Division::all();
-        return sendResponse($division, 'SUCCESS', 201);        
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\EmployeeStatus  $employeeStatus
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         try {
-            $division = Division::with(['position'])->find($id);
-            if ($division->position) {
-                return sendResponse(['error' => "Masih Ada Jabatan yang Mempunya Divisi Ini"],
-                'FAILED', 500);
-            }
-
-            $delete = $division->delete();
-            return sendResponse($delete, 'SUCCESS', 201);
+            // check
+            $employeeStatus = EmployeeStatus::find($id);
+            $employeeStatus->delete();
+            return sendResponse([]);
         } catch (\Throwable $th) {
-            return sendResponse(['error' => $th->getMessage()], 'FAILED', 500);
+            return sendResponse(
+                ['error' => $th->getMessage()],
+                'FAILED',
+                500
+            );
         }
     }
 }

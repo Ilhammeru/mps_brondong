@@ -1,6 +1,9 @@
 @extends('layouts.master')
 
 {{-- begin::styles --}}
+@push('styles')
+<link rel="stylesheet" href="{{ asset('plugins/custom/filepond/filepond.css') }}">
+<link rel="stylesheet" href="{{ asset('plugins/custom/filepond/plugins-preview.css') }}">
 <style>
     .accordion-button:not(.collapsed) {
         background: #fff !important;
@@ -67,7 +70,9 @@
     .card-qrcode {
         height: 320px;
     }
+
 </style>
+@endpush
 {{-- end::styles --}}
 
 @section('content')
@@ -83,7 +88,7 @@
             <!--begin::Card toolbar-->
             <div class="card-toolbar">
                 <!--begin::Button-->
-                <a href="{{ route('employee.index') }}" class="btn btn-light-primary">
+                <a href="{{ route('employees.index') }}" class="btn btn-light-primary">
                 <!--begin::Svg Icon | path: icons/duotune/general/gen035.svg-->
                 <i class="fas fa-chevron-left"></i>
                 <!--end::Svg Icon-->Kembali</a>
@@ -98,46 +103,16 @@
 <div class="row">
     <div class="col-md-4">
         <!--begin::Card-->
-        <div class="card mb-5">
+        <div class="card mb-5 card-main-user">
             <div class="card-body">
                 <!--begin::Input group-->
                 <div class="d-flex justify-content-center">
                     <div class="row">
                         <!--begin::Col-->
                         <div class="col-lg-12">
-                            <!--begin::Image input-->
-                            <div class="image-input image-input-outline" data-kt-image-input="true" style="background-image: url({{ asset('images/blank.png') }})">
-                                <!--begin::Preview existing avatar-->
-                                <div class="image-input-wrapper w-250px h-250px" style="background-image: url( {{ asset('images/blank.png') }})"></div>
-                                <!--end::Preview existing avatar-->
-                                <!--begin::Label-->
-                                <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Ganti Foto">
-                                    <i class="bi bi-pencil-fill fs-7"></i>
-                                    <!--begin::Inputs-->
-                                    <input type="file" id="inputUserImage" name="avatar" accept="image/jpeg, image/x-png" />
-                                    <input type="hidden" name="avatar_remove" />
-                                    <!--end::Inputs-->
-                                </label>
-                                <!--end::Label-->
-                                <!--begin::Cancel-->
-                                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Batal">
-                                    <i class="bi bi-x fs-2"></i>
-                                </span>
-                                <!--end::Cancel-->
-                                @if($userImage)
-                                <!--begin::Remove-->
-                                <a href="#" data-toggle="delete-profile-image">
-                                    <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Hapus Foto">
-                                        <i class="bi bi-x fs-2"></i>
-                                    </span>
-                                </a>
-                                <!--end::Remove-->
-                                @endif
+                            <div class="">
+                                <img src="{{ $user->photo }}" style="border-radius: 12px; width: 250px; height: auto;" alt="">
                             </div>
-                            <!--end::Image input-->
-                            <!--begin::Hint-->
-                            <div class="form-text">Tipe file yang diperbolehkan: png, jpg, jpeg.</div>
-                            <!--end::Hint-->
                         </div>
                         <!--end::Col-->
                     </div>
@@ -265,23 +240,35 @@
                 <div class="row">
                     <div class="d-flex justify-content-between">
                         <h3>Login</h3>
+                        @if ($user->user != NULL)
                         <a href="#" class="btn btn-light-primary btn-sm"><i class="fas fa-user-edit"></i>Ubah Password</a>
+                        @endif
                     </div>
                 </div>
                 <table class="table table-employee-detail">
                     <tbody>
-                        <tr>
-                            <td>Username</td>
-                            <td><b>userusername</b></td>
-                        </tr>
-                        <tr>
-                            <td>Password</td>
-                            <td><b>********</b></td>
-                        </tr>
-                        <tr>
-                            <td>Terakhir Login</td>
-                            <td><b>02 Mei 2022</b></td>
-                        </tr>
+                        @if ($user->user == NULL)
+                            <tr>
+                                <td class="text-center">
+                                    <button class="btn btn-primary" type="button">
+                                        Daftartkan Sebagai Member
+                                    </button>
+                                </td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td>Username</td>
+                                <td><b>{{ $user->user->username }}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Password</td>
+                                <td><b>********</b></td>
+                            </tr>
+                            <tr>
+                                <td>Terakhir Login</td>
+                                <td><b>02 Mei 2022</b></td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -367,35 +354,74 @@
 </div>
 <!--end::Card-->
 {{-- begin::accordion --}}
-<div class="accordion" id="accodionVaccine">
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="headingOne">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVaccine" aria-expanded="true" aria-controls="collapseVaccine">
-                <h3>Vaksin</h3>
-            </button>
-        </h2>
-        <div id="collapseVaccine" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accodionVaccine">
-            <div class="accordion-body">
-                <table class="table table-employee-detail">
-                    <tbody>
-                        <tr>
-                            <td style="width: 200px;">Jenis Vaksin</td>
-                            <td><b>{{ $user->userVaccine == NULL ? '-' : strtoupper($user->userVaccine->vaccine->name) }}</b></td>
-                        </tr>
-                        <tr>
-                            <td>Dosis I</td>
-                            <td><b>{!! $dosis1 != '' ? date('d F Y', strtotime($dosis1->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
-                        </tr>
-                        <tr>
-                            <td>Dosis II</td>
-                            <td><b>{!! $dosis2 != '' ? date('d F Y', strtotime($dosis2->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
-                        </tr>
-                        <tr>
-                            <td>Dosis III</td>
-                            <td><b>{!! $dosis3 != '' ? date('d F Y', strtotime($dosis3->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
-                        </tr>
-                    </tbody>
-                </table>
+<div class="row">
+    <div class="col-md-6">
+        <div class="accordion" id="accodionVaccine">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVaccine" aria-expanded="true" aria-controls="collapseVaccine">
+                        <h3>Vaksin</h3>
+                    </button>
+                </h2>
+                <div id="collapseVaccine" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accodionVaccine">
+                    <div class="accordion-body">
+                        <table class="table table-employee-detail">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 200px;">Jenis Vaksin</td>
+                                    <td><b>{{ $user->userVaccine == NULL ? '-' : strtoupper($user->userVaccine->vaccine->name) }}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Dosis I</td>
+                                    <td><b>{!! $dosis1 != '' ? date('d F Y', strtotime($dosis1->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Dosis II</td>
+                                    <td><b>{!! $dosis2 != '' ? date('d F Y', strtotime($dosis2->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Dosis III</td>
+                                    <td><b>{!! $dosis3 != '' ? date('d F Y', strtotime($dosis3->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="accordion" id="accordionPermissionLeaveOffice">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLeaveOffice" aria-expanded="true" aria-controls="collapseLeaveOffice">
+                        <h3>Izin Keluar Kantor</h3>
+                    </button>
+                </h2>
+                <div id="collapseLeaveOffice" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionPermissionLeaveOffice">
+                    <div class="accordion-body">
+                        <table class="table table-employee-detail">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 200px;">Jenis </td>
+                                    <td><b>{{ $user->userVaccine == NULL ? '-' : strtoupper($user->userVaccine->vaccine->name) }}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Dosis I</td>
+                                    <td><b>{!! $dosis1 != '' ? date('d F Y', strtotime($dosis1->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Dosis II</td>
+                                    <td><b>{!! $dosis2 != '' ? date('d F Y', strtotime($dosis2->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Dosis III</td>
+                                    <td><b>{!! $dosis3 != '' ? date('d F Y', strtotime($dosis3->vaccine_date)) : '<i class="fa fa-times text-danger"></i>' !!}</b></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -422,176 +448,13 @@
     <link rel="stylesheet" href="{{ asset('css/croppie.css') }}">
 @endpush
 @push('scripts')
+    <script src="{{ asset('plugins/custom/filepond/filepond.js') }}"></script>
+    <script src="{{ asset('plugins/custom/filepond/plugins-preview.js') }}"></script>
     <script src="{{ asset('js/croppie.min.js') }}"></script>
     <script>
-        var userImage = null;
-
-        function readUserImageFile(input) {
-        if (input.files && input.files[0]) {
-            $('#userImageModal').modal('show');
-            var reader = new FileReader();
-
-            reader.onload = function (e) {
-            setTimeout(function () {
-                userImage = new Croppie(document.getElementById('userImageCropper'), {
-                viewport: {
-                    width: 240,
-                    height: 240,
-                    type: 'square'
-                },
-                boundary: {
-                    width: 320,
-                    height: 320
-                },
-                url: e.target.result,
-                enableExif: true
-                });
-            }, 500);
-            };
-
-            reader.readAsDataURL(input.files[0]);
-        }
-        }
-
-        $('#inputUserImage').on('change', function () {
-            readUserImageFile(this);
-        });
-        $('#userImageModal').on('hide.bs.modal', function (e) {
-            userImage.destroy();
-            $('#inputUserImage').val('');
-        });
-        $('#userImageModal [data-toggle="crop-image"]').on('click', function (e) {
-            userImage.result({
-                type: 'base64',
-                format: 'jpeg',
-                size: {
-                width: 320,
-                height: 320
-                }
-            }).then(function (resp) {
-                $('#userImagePreview img').attr({
-                    src: resp,
-                    'data-upload': true,
-                    'data-filename': $('#inputUserImage')[0].files[0].name
-                });
-                $('[data-toggle="reset-user-image"]').removeClass('d-none');
-                $('#userImageModal').modal('hide');
-            });
-        });
-
-        function resetUserImage() {
-            var $imgTag = $('#userImagePreview img');
-            $imgTag.attr({
-                src: $imgTag.data('original'),
-                'data-upload': false,
-                'data-filename': '',
-                'data-delete': false
-            });
-            $('[data-toggle="reset-user-image"]').addClass('d-none');
-            $('[data-toggle="delete-user-image"]').removeClass('d-none');
-        }
-
-        function deleteUserImage() {
-            var $imgTag = $('#userImagePreview img');
-            $imgTag.attr({
-                src: $imgTag.data('placeholder'),
-                'data-upload': false,
-                'data-filename': '',
-                'data-delete': true
-            });
-            $('[data-toggle="reset-user-image"]').removeClass('d-none');
-            $('[data-toggle="delete-user-image"]').addClass('d-none');
-        }
-
-        $('[data-toggle="reset-user-image"]').click(resetUserImage);
-        $('[data-toggle="delete-user-image"]').click(deleteUserImage);
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        $('#userImageModal [data-toggle="upload-image"]').on('click', function (e) {
-            var $this = $(this);
-            userImage.result({
-                type: 'blob',
-                format: 'jpeg',
-                size: {
-                width: 320,
-                height: 320
-                }
-            }).then(function (blob) {
-                var formData = new FormData();
-                formData.append('user_image', blob, $('#inputUserImage')[0].files[0].name);
-                $.ajax({
-                url:  "",
-                data: formData,
-                type: 'POST',
-                contentType: false,
-                processData: false,
-                dataType: 'json',
-                error: function error(response) {
-                    if (response.responseJSON.message) {
-                        iziToast['error']({
-                            message: response.responseJSON.message,
-                            position: "topRight"
-                        });
-                    }
-                },
-                success: function success(response) {
-                    Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: 'Data berhasil disimpan'
-                    }).then(function (result) {
-                    window.location.reload();
-                    });
-                },
-                });
-                $('#userImageModal').modal('hide');
-            });
-        });
-
-        $('[data-toggle="delete-profile-image"]').click(function (e) {
-            e.preventDefault();
-            var $this = $(this);
-            Swal.fire({
-                title: "Hapus gambar ini?",
-                text: "Gambar akan dihapus selamanya!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batalkan',
-                customClass: {
-                confirmButton: 'btn btn-danger mr-2',
-                cancelButton: 'btn btn-secondary ml-2'
-                },
-                buttonsStyling: false
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                $.ajax({
-                    url: $this.attr('href'),
-                    method: 'POST',
-                    dataType: 'json',
-                    error: function error(response) {
-                        if (response.responseJSON.message) {
-                            iziToast['error']({
-                                message: response.responseJSON.message,
-                                position: "topRight"
-                            });
-                        }
-                    },
-                    success: function success(data, status, xhr) {
-                    window.location.reload();
-                    },
-                });
-                }
-                if(result.isDismissed){
-                    window.location.reload();
-                }
-            });
-        });
+        FilePond.registerPlugin(FilePondPluginImagePreview);
+        const userImage = document.getElementById('userImage');
+        const pond = FilePond.create(userImage);
     </script>
 @endpush
 

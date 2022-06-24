@@ -19,9 +19,10 @@ class DivisionSeeder extends Seeder
         Division::truncate();
 
         $division = [
-            ['name' => 'keuangan', 'created_at' => Carbon::now()],
-            ['name' => 'HRD', 'created_at' => Carbon::now()],
-            ['name' => 'produksi', 'created_at' => Carbon::now()],
+            ['name' => 'keuangan', 'department_id' => 2, 'created_at' => Carbon::now()],
+            ['name' => 'HRD', 'department_id' => 1, 'created_at' => Carbon::now()],
+            ['name' => 'Admin', 'department_id' => 1, 'created_at' => Carbon::now()],
+            ['name' => 'produksi', 'department_id' => 3, 'created_at' => Carbon::now()],
         ];
 
         Division::insert($division);

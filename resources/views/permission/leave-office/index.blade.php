@@ -257,7 +257,7 @@
 
             $.ajax({
                 type: "GET",
-                url: "{{ route('employee.getData') }}",
+                url: "{{ route('employees.getData') }}",
                 dataType: 'json',
                 success: function(res) {
                     let data = res.data;
@@ -304,7 +304,7 @@
             } else {
                 $.ajax({
                     type: "GET",
-                    url: "{{ url('/employee/getDivision') }}" + "/" + val,
+                    url: "{{ url('/employees/getDivision') }}" + "/" + val,
                     dataType: "json",
                     success: function(res) {
                         console.log(res);

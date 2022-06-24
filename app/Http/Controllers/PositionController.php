@@ -6,6 +6,7 @@ use App\Models\Division;
 use App\Models\Position;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
 class PositionController extends Controller
@@ -67,8 +68,9 @@ class PositionController extends Controller
                 return ucwords($division) ?? "-";
             })
             ->addColumn('action', function($data) {
-                return '<span class="text-info" style="cursor: pointer;" onclick="edit('. $data->id .')"><i class="fas fa-edit"></i></span>
-                <span class="text-info" style="cursor: pointer;" onclick="deleteDivision('. $data->id .')"><i class="fas fa-trash"></i></span>';
+                $param = $data->id . ", 'position'";
+                return '<span class="text-info" style="cursor: pointer;" onclick="edit('. $param .')"><i class="fas fa-edit"></i></span>
+                <span class="text-info" style="cursor: pointer;" onclick="deleteItem('. $param .')"><i class="fas fa-trash"></i></span>';
             })
             ->rawColumns(['action', 'name', 'division'])
             ->make(true);
@@ -82,8 +84,27 @@ class PositionController extends Controller
      */
     public function store(Request $request)
     {
-        $name = strtolower($request->name);
+        $name = $request->name;
         $division = $request->division_id;
+        $rules = [
+            'name' => 'required'
+        ];
+        $validation = Validator::make(
+            $request->all(),
+            $rules,
+            [
+                'name.required' => 'Nama Harus Diisi'
+            ]
+        );
+        if ($validation->fails()) {
+            $error = $validation->errors()->all();
+            return sendResponse(
+                ['error' => $error],
+                'VALIDATION_FAILED',
+                500
+            );
+        }
+
         $payload = [
             'name' => $name,
             'division_id' => $division
@@ -136,18 +157,35 @@ class PositionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $name = strtolower($request->name);
+        $position = Position::find($id);
+        $name = $request->name;
         $division = $request->division_id;
-        $payload = [
-            'id' => $id
+        $rules = [
+            'name' => 'required'
         ];
+        $validation = Validator::make(
+            $request->all(),
+            $rules,
+            [
+                'name.required' => 'Nama Harus Diisi',
+                'name.unique' => 'Nama Sudah Terdaftar di Database'
+            ]
+        );
+        if ($validation->fails()) {
+            $error = $validation->errors()->all();
+            return sendResponse(
+                ['error' => $error],
+                'VALIDATION_FAILED',
+                500
+            );
+        }
 
         try {
-            $position = Position::updateOrCreate(
-                $payload, 
-                ['updated_at' => Carbon::now(), 'name' => $name, 'division_id' => $division]
-            );
-            return sendResponse($position, 'SUCCESS', 201);
+            $position->name = $name;
+            $position->division_id = $division;
+            $position->updated_at = Carbon::now();
+            $position->save();
+            return sendResponse([]);
         } catch (\Throwable $th) {
             return sendResponse(['error' => $th->getMessage()], 'FAILED', 500);
         }

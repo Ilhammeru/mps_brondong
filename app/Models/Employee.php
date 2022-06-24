@@ -21,6 +21,7 @@ class Employee extends Model
         'phone',
         'is_whatsapp',
         'gender',
+        'photo',
         'birth_date',
         'address',
         'province_id',
@@ -61,8 +62,10 @@ class Employee extends Model
         'date_in_permanent',
         'contract_doc',
         'permanent_doc',
+        'department_id',
         'division_id',
         'position_id',
+        'employee_status_id',
         'bank_account_name',
         'bank_account_number',
         'bank_name',
@@ -83,6 +86,11 @@ class Employee extends Model
     public function position(): BelongsTo
     {
         return $this->belongsTo(Position::class, 'position_id', 'id');
+    }
+
+    public function user():HasOne
+    {
+        return $this->hasOne(User::class, 'employee_id', 'id');
     }
 
     /**

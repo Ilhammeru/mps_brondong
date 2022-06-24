@@ -20,9 +20,13 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name', 'email', 'username', 'password',
-        'division_id', 'position_id', 'start_working_date',
-        'start_working_month', 'photo', 'role', 'is_active'
+        'name', 
+        'email',
+        'username',
+        'password',
+        'employee_id',
+        'role',
+        'is_active'
     ];
 
     protected $table = 'users';
@@ -40,6 +44,11 @@ class User extends Authenticatable
     public function division():BelongsTo
     {
         return $this->belongsTo(Division::class, 'division_id', 'id');
+    }
+
+    public function employee():BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'employee_id', 'id');
     }
 
 }

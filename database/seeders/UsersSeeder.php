@@ -25,22 +25,24 @@ class UsersSeeder extends Seeder
                 'email' => 'ranydesykurniasari@gmail.com',
                 'username' => 'randeka',
                 'password' => Hash::make('randeka'),
-                'division_id' => 2,
-                'position_id' => 1,
-                'start_working_date' => date('Y-m-d', strtotime('2021-10-01')),
-                'start_working_month' => date('m', strtotime('2021-10-01')),
-                'role' => 'admin'
+                'role' => 'admin',
+                'employee_id' => 1
+            ],
+            [
+                'name' => 'Ilham Meru Gumilang',
+                'email' => 'gumilang.dev@gmail.com',
+                'username' => 'ilham',
+                'password' => Hash::make('ilham'),
+                'role' => 'admin',
+                'employee_id' => 2
             ],
             [
                 'name' => 'Pak Yit',
                 'email' => 'pakyit@gmail.com',
                 'username' => 'pakyit',
                 'password' => Hash::make('pakyit'),
-                'division_id' => 2,
-                'position_id' => 1,
-                'start_working_date' => date('Y-m-d', strtotime('2021-10-01')),
-                'start_working_month' => date('m', strtotime('2021-10-01')),
-                'role' => 'satpam'
+                'role' => 'satpam',
+                'employee_id' => 3
             ]
         ];
 

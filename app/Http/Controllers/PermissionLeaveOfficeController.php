@@ -31,7 +31,7 @@ class PermissionLeaveOfficeController extends Controller
         ];
 
         $this->messageRules = [
-            'employee.required' => 'Nama Karyawan Tidak Boleh Kosong',
+            'employees.required' => 'Nama Karyawan Tidak Boleh Kosong',
             'division_id.required' => 'Divisi Karyawan Tidak Boleh Kosong',
             'position_id' => 'Posisi Karyawan Tidak Boleh Kosong',
             'date' => 'Tanggal Keluar Tidak Boleh Kosong',
