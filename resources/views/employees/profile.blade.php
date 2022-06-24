@@ -408,7 +408,7 @@
                                             <td>Cuti Haid</td>
                                             <td>:</td>
                                             <td>
-                                                <b>{{ $leaveMenstruation == 0 ? '-' : $leaveMenstruation }}x dalam bulan berjalan</b>
+                                                <b>{{ $leaveMenstruation == 0 ? '-' : $leaveMenstruation . 'x dalam bulan berjalan' }}</b>
                                             </td>
                                         </tr>
                                         <tr>
