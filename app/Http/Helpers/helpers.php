@@ -173,7 +173,8 @@ if (!function_exists('sendEmail')) {
             'paid_prospect_to_sponsor' => 'Aktivasi Prospek',
             'paid_prospect_to_prospect' => 'Aktivasi Akun',
             'custom_email' => $data['custom_subject'] ?? "",
-            'confirm-leave-office' => 'Izin Karyawan'
+            'confirm-leave-office' => 'Izin Meninggalkan Kantor',
+            'confirm-leave-menstruation' => 'Izin Meninggalkan Kantor (Cuti Haid)',
         ];
 
         $config = [
@@ -224,5 +225,29 @@ if (!function_exists('sendEmail')) {
         }
 
         return true;
+    }
+}
+
+if (!function_exists('generateRandomString')) {
+    function generateRandomString($length = 8) {
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charsLength = strlen($chars);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $chars[rand(0, $charsLength - 1)];
+        }
+        return $randomString;
+    }
+}
+
+if (!function_exists('generateRandomNumber')) {
+    function generateRandomNumber($length = 6) {
+        $chars = '0123456789';
+        $charsLength = strlen($chars);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $chars[rand(0, $charsLength - 1)];
+        }
+        return $randomString;
     }
 }
