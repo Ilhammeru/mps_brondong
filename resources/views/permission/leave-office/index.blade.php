@@ -187,7 +187,8 @@
         var _columns = [{
             data: "id",
             width: "0.5%",
-            orderable: false
+            orderable: false,
+            visible: false
         },{
             data: "employee"
         }, {
