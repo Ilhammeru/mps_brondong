@@ -111,7 +111,7 @@
                         <!--begin::Col-->
                         <div class="col-lg-12">
                             <div class="">
-                                <img src="{{ $user->photo }}" style="border-radius: 12px; width: 250px; height: auto;" alt="">
+                                <img src="{{ $user->photo ?? asset('images/blank.png') }}" style="border-radius: 12px; width: 250px; height: auto;" alt="">
                             </div>
                         </div>
                         <!--end::Col-->
