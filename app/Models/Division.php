@@ -27,7 +27,7 @@ class Division extends Model
 
     public function position(): HasOne
     {
-        return $this->hasOne(Division::class, 'division_id', 'id');
+        return $this->hasOne(Position::class, 'division_id', 'id');
     }
 
     public function department():BelongsTo

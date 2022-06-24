@@ -19,11 +19,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('username');
             $table->text('password');
-            $table->integer('division_id')->nullable();
-            $table->integer('position_id')->nullable();
-            $table->date('start_working_date')->nullable();
-            $table->tinyInteger('start_working_month')->nullable();
-            $table->text('photo')->nullable();
+            $table->integer('employee_id');
             $table->string('role')->nullable();
             $table->boolean('is_active')->default(TRUE);
             $table->timestamps();

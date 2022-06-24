@@ -67,11 +67,18 @@ Route::middleware(['auth', 'role:admin'])->group(function() {
 
     // begin::department
     Route::get('/department/json', [DepartmentController::class, 'json'])->name('department.json');
+    Route::get('/department/edit/{id}', [DepartmentController::class, 'edit'])->name('department.edit');
+    Route::put('/department/edit/{id}', [DepartmentController::class, 'update'])->name('department.update');
+    Route::delete('/department/{id}', [DepartmentController::class, 'destroy'])->name('department.destroy');
     Route::post('/department/store', [DepartmentController::class, 'store'])->name('department.store');
     // end::department
 
     // begin::employee status
     Route::get('/employee-status/json', [EmployeeStatusController::class, 'json'])->name('employee-status.json');
+    Route::get('/employee-status/edit/{id}', [EmployeeStatusController::class, 'edit'])->name('employee-status.edit');
+    Route::put('/employee-status/{id}', [EmployeeStatusController::class, 'update'])->name('employee-status.update');
+    Route::post('/employee-status/store', [EmployeeStatusController::class, 'store'])->name('employee-status.store');
+    Route::delete('/employee-status/{id}', [EmployeeStatusController::class, 'destroy'])->name('employee-status.destroy');
     // end::employee status
     
     // begin::position
@@ -82,10 +89,11 @@ Route::middleware(['auth', 'role:admin'])->group(function() {
     // end::position
 
     // begin::employee
-    Route::get('/employee/getData', [EmployeeController::class, 'getData'])->name("employee.getData");
-    Route::get('/employee/getDivision/{id}', [EmployeeController::class, 'getDivision'])->name("employee.getDivision");
-    Route::get('/employee/json', [EmployeeController::class, 'json'])->name("employee.json");
-    Route::resource('employee', EmployeeController::class);
+    Route::get('/employees/getData', [EmployeeController::class, 'getData'])->name("employees.getData");
+    Route::get('/employees/getDivision/{id}', [EmployeeController::class, 'getDivision'])->name("employees.getDivision");
+    Route::get('/employees/json', [EmployeeController::class, 'json'])->name("employees.json");
+    Route::post('/employees/{id}', [EmployeeController::class, 'update'])->name("employees.update");
+    Route::resource('employees', EmployeeController::class);
     // end::employee
 
     // begin::region
@@ -104,7 +112,8 @@ Route::middleware(['auth', 'role:admin'])->group(function() {
 
     // begin::organization-structure
     Route::get('/organization-structure/index', [OrganizationStructureController::class, 'index'])->name('organization-structure.index');
-    Route::get('/organization-structure/add-department', [OrganizationStructureController::class, 'addDepartment'])->name('organization-structure.addDepartment');
+    Route::get('/organization-structure/edit/{id}/{type}', [OrganizationStructureController::class, 'edit'])->name('organization-structure.edit');
+    Route::get('/organization-structure/add-form/{type}', [OrganizationStructureController::class, 'addForm'])->name('organization-structure.addForm');
     Route::get('/organization-structure/add-division', [OrganizationStructureController::class, 'addDivision'])->name('organization-structure.addDivision');
 ;    // end::organization-structure
 });

@@ -21,6 +21,7 @@ class DivisionSeeder extends Seeder
         $division = [
             ['name' => 'keuangan', 'department_id' => 2, 'created_at' => Carbon::now()],
             ['name' => 'HRD', 'department_id' => 1, 'created_at' => Carbon::now()],
+            ['name' => 'Admin', 'department_id' => 1, 'created_at' => Carbon::now()],
             ['name' => 'produksi', 'department_id' => 3, 'created_at' => Carbon::now()],
         ];
 

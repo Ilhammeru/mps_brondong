@@ -6,7 +6,7 @@
         <div class="card-body p-3">
             <div class="text-end">
                 {{-- begin::button-add --}}
-                <a class="btn btn-light-primary" href="{{ route('employee.create') }}">
+                <a class="btn btn-light-primary" href="{{ route('employees.create') }}">
                     <i class="fa fa-plus me-3"></i>
                     Tambah
                 </a>
@@ -109,7 +109,7 @@
             processing: true,
             serverSide: true,
             scrollX: true,
-            ajax: "{{ route('employee.json') }}",
+            ajax: "{{ route('employees.json') }}",
             columns: _columns,
         });
 

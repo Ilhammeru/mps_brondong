@@ -1,4 +1,10 @@
 @extends('layouts.master')
+@php
+    $departmentUrl = url('/department');
+    $divisionUrl = url('/division');
+    $positionUrl = url('/position');
+    $employeeStatusUrl = url('/employee-status');
+@endphp
 {{-- begin::section --}}
 @section('content')
     {{-- begin::card-department --}}
@@ -8,7 +14,7 @@
                 <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between mb-5">
                             <h3>Department</h3>
-                            <button class="btn btn-light-primary" type="button" onclick="addDepartment()">
+                            <button class="btn btn-light-primary" type="button" onclick="addForm('department')">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
@@ -30,7 +36,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-5">
                         <h3>Divisi</h3>
-                        <button class="btn btn-light-primary" type="button" onclick="addDivision()">
+                        <button class="btn btn-light-primary" type="button" onclick="addForm('division')">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
@@ -53,7 +59,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-5">
                         <h3>Jabatan</h3>
-                        <button class="btn btn-light-primary">
+                        <button class="btn btn-light-primary" onclick="addForm('position')" type="button">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
@@ -75,7 +81,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-5">
                         <h3>Status</h3>
-                        <button class="btn btn-light-primary">
+                        <button class="btn btn-light-primary" type="button" onclick="addForm('employeeStatus')">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
@@ -110,7 +116,7 @@
                         <div class="form-group row">
                             <div class="col">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                                <button class="btn btn-primary" id="btnSave" onclick="save()">Simpan</button>
+                                <button class="btn btn-primary" type="button" id="btnSave" onclick="save()">Simpan</button>
                             </div>
                         </div>
                     </div>
@@ -206,6 +212,20 @@
             columns: _columnsEmployeeStatus,
         });
 
+        let urls = {
+            edit: {
+                'department': "{{ $departmentUrl }}",
+                'division': "{{ $divisionUrl }}",
+                'position': "{{ $positionUrl }}",
+                'employeeStatus': "{{ $employeeStatusUrl }}",
+            },
+            post: {
+                'department': "{{ route('department.store') }}",
+                'division': "{{ route('division.store') }}",
+                'position': "{{ route('position.store') }}",
+                'employeeStatus': "{{ route('employee-status.store') }}",
+            }
+        }
         let modalOrganization = $('#modalOrganizationStructure');
         let btnSave = $('#btnSave');
         let form = $('#formOrganizationStructure');
@@ -229,20 +249,36 @@
             })
         }
 
-        function addDivision() {
+        function addForm(type) {
+            let lang;
+            if (type == 'department') {
+                lang = 'Department';
+            } else if (type == 'division') {
+                lang = 'Divisi';
+            } else if (type == 'position') {
+                lang = 'Jabatan';
+            } else {
+                lang = 'Status';
+            }
+
+            let url = generateUrl(type);
+
             $.ajax({
                 type: "GET",
-                url: "{{ url('/organization-structure/add-division') }}",
+                url: "{{ url('/organization-structure/add-form') }}" + "/" + type, 
                 success: function(res) {
                     let view = res.data.view;
                     $('#targetBodyOrganization').html(view);
                     $('#departmentId').select2({
                         dropdownParent: modalOrganization
                     });
-                    $('#modalTitle').text('Tambah Divisi');
-                    form.attr('action', "{{ route('division.store') }}");
+                    $('#divisionId').select2({
+                        dropdownParent: modalOrganization
+                    });
+                    $('#modalTitle').text(`Tambah ${lang}`);
+                    form.attr('action', url.post);
                     form.attr('method', 'POST');
-                    btnSave.attr('onclick', "save('division')")
+                    btnSave.attr('onclick', `save('${type}')`)
                     modalOrganization.modal('show');
                 },
                 error: function(err) {
@@ -252,6 +288,7 @@
         }
 
         function save(structure) {
+            console.log(structure);
             let data = form.serialize();
             let url = form.attr('action');
             let method = form.attr('method');
@@ -287,6 +324,101 @@
                 },
                 error: function(err) {
                     handleError(err, btnSave);
+                }
+            })
+        }
+
+        function generateUrl(type, id = "") {
+            let urlEdit, urlPost;
+            if (type == 'department') {
+                urlEdit = urls.edit.department + "/" + id;
+                urlPost = urls.post.department;
+            } else if (type == 'division') {
+                urlEdit = urls.edit.division + "/" + id;
+                urlPost = urls.post.division;
+            } else if (type == 'position') {
+                urlEdit = urls.edit.position + "/" + id;
+                urlPost = urls.post.position;
+            } else {
+                urlEdit = urls.edit.employeeStatus + "/" + id;
+                urlPost = urls.post.employeeStatus;
+            }
+
+            return {
+                edit: urlEdit,
+                post: urlPost,
+            };
+        }
+
+        function edit(id, type) {
+            let url = generateUrl(type, id);
+            $.ajax({
+                type: "GET",
+                url: "{{ url('/organization-structure/edit') }}" + "/" + id + "/" + type,
+                dataType: "json",
+                success: function(res) {
+                    $('#targetBodyOrganization').html(res.data.view);
+                    form.attr('action', url.edit);
+                    form.attr('method', 'PUT');
+                    btnSave.attr('onclick', `save('${type}')`)
+                    modalOrganization.modal("show");
+                    $('#departmentId').select2({
+                        dropdownParent: modalOrganization
+                    });
+                    $('#divisionId').select2({
+                        dropdownParent: modalOrganization
+                    });
+                },
+                error: function(err) {
+                    handleError(err);
+                }
+            })
+        }
+
+        function deleteItem(id, type) {
+            let lang;
+            if (type == 'department') {
+                lang = 'Department';
+            } else if (type == 'division') {
+                lang = 'Divisi';
+            } else if (type == 'position') {
+                lang = 'Jabatan';
+            } else {
+                lang = 'Status';
+            }
+            let url = generateUrl(type, id);
+            Swal.fire({
+                title: `Apakah anda yakin ingin menghapus ${lang} ini?`,
+                showDenyButton: true,
+                showCancelButton: false,
+                confirmButtonText: 'Ya! Hapus',
+                denyButtonText: `Batalkan`,
+            }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: url.edit,
+                        success: function(res) {
+                            iziToast['success']({
+                                message: 'Data berhasil di hapus',
+                                position: "topRight"
+                            });
+
+                            if (type == 'department') {
+                                tablesDepartment.ajax.reload();
+                            } else if (type == 'position') {
+                                tablesPosition.ajax.reload();
+                            } else if (type == 'division') {
+                                tablesDivision.ajax.reload();
+                            } else {
+                                tablesEmployeeStatus.ajax.reload();
+                            }
+                        },
+                        error: function(err) {
+                            handleError(err);
+                        }
+                    })
                 }
             })
         }

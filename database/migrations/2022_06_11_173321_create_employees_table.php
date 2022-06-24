@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('email')->email();
             $table->string('nik');
             $table->string('gender', 1)->nullable();
+            $table->text('photo')->nullable();
             $table->date('birth_date')->nullable();
             $table->string('address')->nullable();
             $table->integer('province_id')->nullable();
@@ -58,8 +59,10 @@ return new class extends Migration
             $table->string('wali_name')->nullable();
             $table->string('wali_phone')->nullable();
             $table->text('wali_address')->nullable();
+            $table->integer('department_id');
             $table->integer('division_id');
             $table->integer('position_id');
+            $table->integer('employee_status_id');
             $table->date('date_in_contract')->nullable();
             $table->date('date_in_permanent')->nullable();
             $table->text('contract_doc')->nullable();

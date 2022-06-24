@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Department;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
 class DepartmentController extends Controller
@@ -27,8 +28,9 @@ class DepartmentController extends Controller
                 return ucwords($data->name);
             })
             ->addColumn('action', function($data) {
-                return '<span class="text-info" style="cursor: pointer;" onclick="edit('. $data->id .')"><i class="fas fa-edit"></i></span>
-                <span class="text-info" style="cursor: pointer;" onclick="deleteDivision('. $data->id .')"><i class="fas fa-trash"></i></span>';
+                $param = $data->id . ", 'department'";
+                return '<span class="text-info" style="cursor: pointer;" onclick="edit('. $param .')"><i class="fas fa-edit"></i></span>
+                <span class="text-info" style="cursor: pointer;" onclick="deleteItem('. $param .')"><i class="fas fa-trash"></i></span>';
             })
             ->rawColumns(['action', 'name'])
             ->make(true);
@@ -52,6 +54,19 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
+        $validation = Validator::make(
+            $request->all(),
+            ['name' => 'required'],
+            ['name.required' => 'Nama Harus Diisi']
+        );
+        if ($validation->fails()) {
+            $error = $validation->errors()->all();
+            return sendResponse(
+                ['error' => $error],
+                'VALIDATION_FAILED',
+                500
+            );
+        }
         $name = $request->name;
         $payload = [
             'name' => $name
@@ -83,9 +98,8 @@ class DepartmentController extends Controller
      * @param  \App\Models\Department  $department
      * @return \Illuminate\Http\Response
      */
-    public function edit(Department $department)
+    public function edit($id)
     {
-        //
     }
 
     /**
@@ -95,9 +109,39 @@ class DepartmentController extends Controller
      * @param  \App\Models\Department  $department
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Department $department)
+    public function update(Request $request, $id)
     {
-        //
+        $department = Department::find($id);
+        $rules = ['name' => 'required'];
+        if (strtolower($department->name) != strtolower($request->name)) {
+            $rules['name'] = 'required|unique:department,name';
+        }
+        $validation = Validator::make(
+            $request->all(),
+            $rules,
+            ['name.required' => 'Nama Harus Diisi']
+        );
+        if ($validation->fails()) {
+            $error = $validation->errors()->all();
+            return sendResponse(
+                ['error' => $error],
+                'VALIDATION_FAILED',
+                500
+            );
+        }
+        try {
+            $department->name = $request->name;
+            $department->updated_at = Carbon::now();
+            $department->save();
+
+            return sendResponse([]);
+        } catch (\Throwable $th) {
+            return sendResponse(
+                ['error' => $th->getMessage()],
+                'FAILED',
+                500
+            );
+        }
     }
 
     /**
@@ -106,8 +150,27 @@ class DepartmentController extends Controller
      * @param  \App\Models\Department  $department
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Department $department)
+    public function destroy($id)
     {
-        //
+        try {
+            // check
+            $department = Department::with('divisions')->find($id);
+            $check = $department->divisions;
+            if (count($check) > 0) {
+                return sendResponse(
+                    ['error' => 'Masih Ada Divisi yang Mempunyai Departmen Ini'],
+                    'FAILED',
+                    500
+                );
+            }
+            $department->delete();
+            return sendResponse([]);
+        } catch (\Throwable $th) {
+            return sendResponse(
+                ['error' => $th->getMessage()],
+                'FAILED',
+                500
+            );
+        }
     }
 }

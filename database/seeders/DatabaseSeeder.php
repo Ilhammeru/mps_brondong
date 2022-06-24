@@ -19,13 +19,13 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DivisionSeeder::class,
             PositionSeeder::class,
+            EmployeeSeeder::class,
             UsersSeeder::class,
             VaccineSeeder::class,
             IndoRegionProvinceSeeder::class,
             IndoRegionRegencySeeder::class,
             IndoRegionDistrictSeeder::class,
             IndoRegionVillageSeeder::class,
-            EmployeeSeeder::class,
             EmployeeVaccineSeeder::class,
             DepartmentSeeder::class,
             EmployeeStatusSeeder::class

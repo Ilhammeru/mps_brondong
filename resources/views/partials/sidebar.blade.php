@@ -1,5 +1,7 @@
 @php
     $user = Auth::user();
+    $userId = Auth::id();
+    $photo = \App\Models\Employee::select('photo')->where('id', $userId)->first();
     $split = explode(' ', $user->name);
     $name = count($split) > 1 ? ucwords($split[0] . ' ' . $split[1]) : ucwords($split[0]);
 @endphp
@@ -12,7 +14,7 @@
         <div class="aside-user d-flex align-items-sm-center justify-content-center py-5">
             <!--begin::Symbol-->
             <div class="symbol symbol-50px">
-                <img src="{{ asset('images/blank.png') }}" alt="" />
+                <img src="{{ $photo->photo ?? asset('images/blank.png') }}" alt="" />
             </div>
             <!--end::Symbol-->
             <!--begin::Wrapper-->
@@ -60,7 +62,9 @@
                                     <div class="d-flex flex-column">
                                         <div class="fw-bolder d-flex align-items-center fs-5">{{ $name }}
                                         <span class="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">Pro</span></div>
-                                        <a href="#" class="fw-bold text-muted text-hover-primary fs-7">{{ $user->email }}</a>
+                                        <div style="overflow-wrap: break-word; inline-size: 100px;">
+                                            <a href="#" class="fw-bold text-muted text-hover-primary fs-7">{{ $user->email }}</a>
+                                        </div>
                                     </div>
                                     <!--end::Username-->
                                 </div>
@@ -71,7 +75,7 @@
                             <!--end::Menu separator-->
                             <!--begin::Menu item-->
                             <div class="menu-item px-5">
-                                <a href="{{ route('template.profile') }}" class="menu-link px-5">My Profile</a>
+                                <a href="{{ route('employees.show', Auth::id()) }}" class="menu-link px-5">My Profile</a>
                             </div>
                             <!--end::Menu item-->
                             <!--begin::Menu item-->
@@ -128,7 +132,7 @@
                     </div>
 
                     {{-- begin::u --}}
-                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ menuShow(['division.index', 'position.index', 'employee.*', 'organization-structure.*']) }}">
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ menuShow(['division.index', 'position.index', 'employees.*', 'organization-structure.*']) }}">
                         <span class="menu-link">
                             <span class="menu-icon">
                                 <!--begin::Svg Icon | path: icons/duotune/finance/fin006.svg-->
@@ -138,16 +142,6 @@
                             <span class="menu-title">Personalia</span>
                             <span class="menu-arrow"></span>
                         </span>
-                        <div class="menu-sub menu-sub-accordion">
-                            <div class="menu-item">
-                                <a class="menu-link {{ menuActive('division.index') }}" href="{{ route('division.index') }}">
-                                    <span class="menu-bullet">
-                                        <span class="bullet bullet-dot"></span>
-                                    </span>
-                                    <span class="menu-title">Department</span>
-                                </a>
-                            </div>
-                        </div>
                         <div class="menu-sub menu-sub-accordion">
                             <div class="menu-item">
                                 <a class="menu-link {{ menuActive('organization-structure.*') }}" href="{{ route('organization-structure.index') }}">
@@ -160,17 +154,7 @@
                         </div>
                         <div class="menu-sub menu-sub-accordion">
                             <div class="menu-item">
-                                <a class="menu-link {{ menuActive('position.index') }}" href="{{ route('position.index') }}">
-                                    <span class="menu-bullet">
-                                        <span class="bullet bullet-dot"></span>
-                                    </span>
-                                    <span class="menu-title">Jabatan</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="menu-sub menu-sub-accordion">
-                            <div class="menu-item">
-                                <a class="menu-link {{ menuActive('employee.*') }}" href="{{ route('employee.index') }}">
+                                <a class="menu-link {{ menuActive('employees.*') }}" href="{{ route('employees.index') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Division;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
 class DivisionController extends Controller
@@ -36,8 +37,9 @@ class DivisionController extends Controller
                 return ucwords($data->department->name);
             })
             ->addColumn('action', function($data) {
-                return '<span class="text-info" style="cursor: pointer;" onclick="edit('. $data->id .')"><i class="fas fa-edit"></i></span>
-                <span class="text-info" style="cursor: pointer;" onclick="deleteDivision('. $data->id .')"><i class="fas fa-trash"></i></span>';
+                $param = $data->id . ", 'division'";
+                return '<span class="text-info" style="cursor: pointer;" onclick="edit('. $param .')"><i class="fas fa-edit"></i></span>
+                <span class="text-info" style="cursor: pointer;" onclick="deleteItem('. $param .')"><i class="fas fa-trash"></i></span>';
             })
             ->rawColumns(['action', 'name'])
             ->make(true);
@@ -63,6 +65,24 @@ class DivisionController extends Controller
     {
         $name = $request->name;
         $departmentId = $request->department_id;
+        $rules = [
+            'name' => 'required'
+        ];
+        $validation = Validator::make(
+            $request->all(),
+            $rules,
+            [
+                'name.required' => 'Nama Harus Diisi'
+            ]
+        );
+        if ($validation->fails()) {
+            $error = $validation->errors()->all();
+            return sendResponse(
+                ['error' => $error],
+                'VALIDATION_FAILED',
+                500
+            );
+        }
         $payload = [
             'name' => $name,
             'department_id' => $departmentId,
@@ -113,17 +133,37 @@ class DivisionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $name = strtolower($request->name);
-        $payload = [
-            'id' => $id
+        $division = Division::find($id);
+        $name = $request->name;
+        $rules = [
+            'name' => 'required'
         ];
+        if (strtolower($division->name) != $name) {
+            $rules['name'] = 'required|unique:divisions,name';
+        }
+        $validation = Validator::make(
+            $request->all(),
+            $rules,
+            [
+                'name.required' => 'Nama Harus Diisi',
+                'name.unique' => 'Nama Sudah Terdaftar di Database'
+            ]
+        );
+        if ($validation->fails()) {
+            $error = $validation->errors()->all();
+            return sendResponse(
+                ['error' => $error],
+                'VALIDATION_FAILED',
+                500
+            );
+        }
 
         try {
-            $division = Division::updateOrCreate(
-                $payload, 
-                ['updated_at' => Carbon::now(), 'name' => $name]
-            );
-            return sendResponse($division, 'SUCCESS', 201);
+            $division->name = $name;
+            $division->department_id = $request->department_id;
+            $division->updated_at = Carbon::now();
+            $division->save();
+            return sendResponse([]);
         } catch (\Throwable $th) {
             return sendResponse(['error' => $th->getMessage()], 'FAILED', 500);
         }
@@ -148,14 +188,13 @@ class DivisionController extends Controller
     public function destroy($id)
     {
         try {
-            $division = Division::with('users')->find($id);
-    
-            if (count($division->users) > 0) {
-                return sendResponse(['error' => "Divisi $division->name masih mempunyai relasi pada karyawan"],
+            $division = Division::with(['position'])->find($id);
+            if ($division->position) {
+                return sendResponse(['error' => "Masih Ada Jabatan yang Mempunya Divisi Ini"],
                 'FAILED', 500);
             }
 
-            $delete = Division::where('id', $id)->delete();
+            $delete = $division->delete();
             return sendResponse($delete, 'SUCCESS', 201);
         } catch (\Throwable $th) {
             return sendResponse(['error' => $th->getMessage()], 'FAILED', 500);
