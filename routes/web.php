@@ -59,9 +59,6 @@ Route::get('/password-request', function() {
 })->name('password.request');
 
 Route::middleware(['auth'])->group(function() {
-    Route::get('/employees/{id}', [EmployeeController::class, 'show'])->name("employees.show");
-    Route::get('/employees/detail/leave-office/{id}', [PermissionLeaveOfficeController::class, 'detailLeaveOffice'])->name("employees.detailLeaveOffice");
-    Route::get('/employees/detail/leave-menstruation/{id}', [MenstruationLeaveController::class, 'detailLeaveMenstruation'])->name("employees.detailLeaveOffice");
     Route::middleware('role:admin')->group(function() {
         // begin::division
         Route::get('/division/json', [DivisionController::class, 'json'])->name('division.json');
@@ -97,6 +94,7 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/employees/detail/getData', [EmployeeController::class, 'getData'])->name("employees.getData");
         Route::get('/employees/getDivision/{id}', [EmployeeController::class, 'getDivision'])->name("employees.getDivision");
         Route::get('/employees/data/json', [EmployeeController::class, 'json'])->name("employees.json");
+        Route::get('/employees/create/data', [EmployeeController::class, 'create'])->name("employees.create");
         Route::post('/employees/{id}', [EmployeeController::class, 'update'])->name("employees.update");
         Route::resource('employees', EmployeeController::class);
         // end::employee
@@ -125,6 +123,9 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/organization-structure/add-division', [OrganizationStructureController::class, 'addDivision'])->name('organization-structure.addDivision');
        // end::organization-structure
     });
+    Route::get('/employees/{id}', [EmployeeController::class, 'show'])->name("employees.show");
+    Route::get('/employees/detail/leave-office/{id}', [PermissionLeaveOfficeController::class, 'detailLeaveOffice'])->name("employees.detailLeaveOffice");
+    Route::get('/employees/detail/leave-menstruation/{id}', [MenstruationLeaveController::class, 'detailLeaveMenstruation'])->name("employees.detailLeaveOffice");
 });
 
 Route::middleware(['auth', 'role:satpam'])->group(function() {
