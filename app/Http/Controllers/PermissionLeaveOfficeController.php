@@ -125,7 +125,13 @@ class PermissionLeaveOfficeController extends Controller
      */
     public function create()
     {
-        //
+        $pageTitle = 'Tambah Data';
+        $employee = Employee::select('name', 'id', 'position_id')
+            ->with(['position:id,name'])
+            ->where("id", "<>", Auth::id())
+            ->where('is_active', 1)
+            ->get();
+        return view('permission.leave-office.create', compact('pageTitle', 'employee'));
     }
 
     /**
