@@ -23,11 +23,10 @@ class PermissionLeaveOffice extends Model
      * @return array
      */
     protected $fillable = [
+        'ticket_code',
         'employee_id',
         'leave_date_time',
         'notes',
-        'position_id',
-        'division_id',
         'approved_by',
         'checked_by'
     ];
@@ -60,25 +59,5 @@ class PermissionLeaveOffice extends Model
     public function checkedBy():BelongsTo
     {
         return $this->belongsTo(Employee::class, 'checked_by', 'id');
-    }
-    
-    /**
-     * Define Belongs to Relationship to Division
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function division():BelongsTo
-    {
-        return $this->belongsTo(Division::class, 'division_id', 'id');
-    }
-
-    /**
-     * Define Belongs to Relationship to Division
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function position():BelongsTo
-    {
-        return $this->belongsTo(Position::class, 'position_id', 'id');
     }
 }

@@ -21,23 +21,11 @@ class PermissionLeaveOfficeController extends Controller
     public function __construct()
     {
         $this->rules = [
-            'employee' => 'required',
-            'division_id' => 'required',
-            'position_id' => 'required',
-            'date' => 'required',
-            'hour' => 'required',
-            'minute' => 'required',
-            'notes' => 'required'
+            'letter.*' => 'required',
         ];
 
         $this->messageRules = [
-            'employees.required' => 'Nama Karyawan Tidak Boleh Kosong',
-            'division_id.required' => 'Divisi Karyawan Tidak Boleh Kosong',
-            'position_id' => 'Posisi Karyawan Tidak Boleh Kosong',
-            'date' => 'Tanggal Keluar Tidak Boleh Kosong',
-            'hour' => 'Jam Keluar Tidak Boleh Kosong',
-            'minute' => 'Jam Keluar Tidak Boleh Kosong',
-            'notes' => 'Alasan Keluar Tidak Boleh Kosong',
+            'letter.*.required' => 'Semua Field harus terisi'
         ];
     }
 
@@ -50,7 +38,11 @@ class PermissionLeaveOfficeController extends Controller
     {
         $pageTitle = 'Izin Keluar Kantor';
         $division = Division::all();
-        return view('permission.leave-office.index', compact('pageTitle', 'division'));
+        $employee = Employee::select(['name', 'id', 'position_id'])
+            ->with('position:id,name')
+            ->where('id', '<>', Auth::id())
+            ->get();
+        return view('permission.leave-office.index', compact('pageTitle', 'division', 'employee'));
     }
 
     /**
@@ -70,13 +62,16 @@ class PermissionLeaveOfficeController extends Controller
                 return '<span style="color: transparent;">{{ $data->id }}</span>';
             })
             ->addColumn('employee', function($data) {
-                return '<span>'. ucwords($data->employee->name) .'</span>';
-            })
-            ->addColumn('division', function($data) {
-                $division = $data->division->name;
-                $position = $data->position->name;
-                $format = $division . ' - ' . $position;
-                return $format;
+                $employees = json_decode($data->employee_id, TRUE);
+                $employee = [];
+                for ($a = 0; $a < count($employees); $a++) {
+                    $empData = Employee::select('name', 'position_id')
+                        ->with('position')
+                        ->where('id', $employees[$a])
+                        ->first();
+                    $employee[] = $empData->name;
+                }
+                return '<span>'. ucwords(implode(', ', $employee)) .'</span>';
             })
             ->addColumn('date_time', function($data) {
                 $date = date('d F Y', strtotime($data->leave_date_time));
@@ -141,14 +136,7 @@ class PermissionLeaveOfficeController extends Controller
      */
     public function store(Request $request)
     {
-        $employee = $request->employee;
-        $division = $request->division_id;
-        $position = $request->position_id;
-        $date = $request->date;
-        $hour = $request->hour;
-        $minute = $request->minute;
-        $time = $hour . ':' . $minute;
-        $notes = $request->notes;
+        $data = array_values($request->letter);
         $approvedBy = Auth::id();
 
         $validation = Validator::make(
@@ -166,16 +154,25 @@ class PermissionLeaveOfficeController extends Controller
         }
 
         try {
-            $data = [
-                'employee_id' => $employee,
-                'position_id' => $position,
-                'division_id' => $division,
-                'leave_date_time' => date('Y-m-d H:i:s', strtotime($date . ' ' . $time)),
-                'notes' => $notes,
-                'approved_by' => $approvedBy,
-                'created_at' => Carbon::now()
-            ];
-            PermissionLeaveOffice::insert($data);
+            $dataLeave = [];
+            $permissionData = PermissionLeaveOffice::select('id')->count();
+            for ($a = 0; $a < count($data); $a++) {
+                $permissionData = $permissionData + 1;
+                $code = str_pad($permissionData, 3, '0', STR_PAD_LEFT);
+                $ticketCode = 'LOP-' . $code . '-' . date('Ymd');
+                $hour = $data[$a]['hour'];
+                $minute = $data[$a]['minute'];
+                $time = $hour . ':' . $minute;
+                $dataLeave[] = [
+                    'ticket_code' => $ticketCode,
+                    'employee_id' => json_encode($data[$a]['employee']),
+                    'leave_date_time' => date('Y-m-d H:i:s', strtotime($data[$a]['date'] . ' ' . $time)),
+                    'notes' => $data[$a]['notes'],
+                    'approved_by' => $approvedBy,
+                    'created_at' => Carbon::now()
+                ];
+            }
+            PermissionLeaveOffice::insert($dataLeave);
             return sendResponse([]);
         } catch (\Throwable $th) {
             return sendResponse(
@@ -194,12 +191,13 @@ class PermissionLeaveOfficeController extends Controller
      */
     public function show($id)
     {
-        $employee = Employee::select('name', 'id')
+        $employee = Employee::select('name', 'id', 'position_id')
+            ->with(['position:id,name'])
             ->where("id", "!=", Auth::id())
             ->where('is_active', 1)
             ->get();
-        $permissionLeaveOffice = PermissionLeaveOffice::with(['position', 'division'])
-            ->find($id);
+        $permissionLeaveOffice = PermissionLeaveOffice::find($id);
+        $employees = json_decode($permissionLeaveOffice->employee_id, TRUE);
         $leaveDate = $permissionLeaveOffice->leave_date_time;
         $split = explode(' ', $leaveDate);
         $time = date("H:i:s", strtotime($split[1]));
@@ -210,6 +208,7 @@ class PermissionLeaveOfficeController extends Controller
         return sendResponse([
             'data' => $permissionLeaveOffice,
             'employee' => $employee,
+            'currentEmployee' => $employees,
             'hour' => $hour,
             'minute' => $minute,
             'date' => $date
@@ -217,9 +216,21 @@ class PermissionLeaveOfficeController extends Controller
     }
 
     public function detail($id) {
-        $data = PermissionLeaveOffice::with(['position', 'division', 'approvedBy'])
+        $data = PermissionLeaveOffice::with(['approvedBy'])
             ->find($id);
-        $view = view('permission.leave-office._detail', compact('data'))->render();
+        $employees = json_decode($data->employee_id, TRUE);
+        $employee = [];
+        for ($a = 0; $a < count($employees); $a++) {
+            $dataEmp = Employee::select('id', 'name', 'position_id')
+                ->with(['position:id,name'])
+                ->where('id', $employees[$a])
+                ->first();
+            $employee[] = [
+                'name' => $dataEmp->name,
+                'position' => $dataEmp->position->name
+            ];
+        }
+        $view = view('permission.leave-office._detail', compact('data', 'employee'))->render();
 
         return sendResponse(['view' => $view]);
     }
@@ -245,8 +256,6 @@ class PermissionLeaveOfficeController extends Controller
     public function update(Request $request, $id)
     {
         $employee = $request->employee;
-        $division = $request->division_id;
-        $position = $request->position_id;
         $date = $request->date;
         $hour = $request->hour;
         $minute = $request->minute;
@@ -270,12 +279,11 @@ class PermissionLeaveOfficeController extends Controller
 
         try {
             $permissionLeaveOffice = PermissionLeaveOffice::find($id);
-            $permissionLeaveOffice->employee_id = $employee;
-            $permissionLeaveOffice->position_id = $position;
-            $permissionLeaveOffice->division_id = $division;
+            $permissionLeaveOffice->employee_id = json_encode($employee);
             $permissionLeaveOffice->leave_date_time = date('Y-m-d H:i:s', strtotime($date . ' ' . $time));
             $permissionLeaveOffice->approved_by = $approvedBy;
             $permissionLeaveOffice->notes = $notes;
+            $permissionLeaveOffice->updated_at = Carbon::now();
             $permissionLeaveOffice->save();
 
             return sendResponse([]);
@@ -366,15 +374,32 @@ class PermissionLeaveOfficeController extends Controller
             $check = User::where('username', $username)->first();
             if ($check) {
                 if (Hash::check($password, $check->password)) {
-                    $data = PermissionLeaveOffice::find($id);
-                    if ($check->employee_id == $data->employee_id) {
-                        if ($check->role != 'admin') {
-                            return sendResponse(
-                                ['error' => 'Anda Tidak Bisa Mengizinkan Diri Anda Sendiri'],
-                                'FAILED',
-                                500
-                            );
+                    $data = PermissionLeaveOffice::with(['approvedBy'])
+                        ->where('id', $id)
+                        ->first();
+                    $employees = json_decode($data->employee_id, TRUE);
+                    $names = [];
+                    $employeeName = [];
+                    for ($a = 0; $a < count($employees); $a++) {
+                        if ($check->employee_id == $employees[$a]) {
+                            if ($check->role != 'admin') {
+                                return sendResponse(
+                                    ['error' => 'Anda Tidak Bisa Mengizinkan Diri Anda Sendiri'],
+                                    'FAILED',
+                                    500
+                                );
+                            }
                         }
+
+                        $employeeNameData = Employee::select('name', 'position_id')
+                            ->with('position:id,name')
+                            ->where('id', $employees[$a])
+                            ->first();
+                        $names[] = [
+                            'name' => $employeeNameData->name,
+                            'position' => $employeeNameData->position->name
+                        ];
+                        $employeeName[] = $employeeNameData->name;
                     }
                     $data->checked_by = $check->id;
                     $data->updated_at = Carbon::now();
@@ -382,7 +407,8 @@ class PermissionLeaveOfficeController extends Controller
 
                     $content = [
                         'checkedBy' => $check->name,
-                        'employeeName' => Employee::select('name')->where('id', $data->employee_id)->first()->name,
+                        'employeeName' => implode(',', $employeeName),
+                        'names' => $names,
                         'data' => $data
                     ];
                     $data = [

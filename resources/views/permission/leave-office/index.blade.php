@@ -72,8 +72,8 @@
                     <!--begin::Table row-->
                     <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
                         <th></th>
+                        <th>Kode Tiket</th>
                         <th>Nama</th>
-                        <th>Divisi</th>
                         <th>Waktu Keluar</th>
                         <th>Alasan Keluar</th>
                         <th>Status</th>
@@ -107,7 +107,7 @@
                     <form action="" id="formLeaveOffice">
                         <div class="sectionCardLeave">
                             {{-- <span class="deleteSectionLeave"><i class="fas fa-times text-danger fa-2x"></i></span> --}}
-                            <div class="row mb-5">
+                            <div class="row mb-5 rowForm" id="rowForm1">
                                 <div class="col">
                                     <div class="card card-flush bg-secondary">
                                         <div class="card-body">
@@ -122,19 +122,14 @@
                                                 </div>
                                                 <div class="col-md-8">
                                                     <div class="row">
-                                                        <div class="col-md-4">
-                                                            <label for="employeeName" class="col-form-label">Nama</label>
-                                                            <select name="employee" id="employeeName" class="form-select form-control" onchange="changeEmployee()"></select>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label for="divisionId" class="col-form-label">Divisi</label>
-                                                            <input id="divisionName" readonly class="form-control" />
-                                                            <input name="division_id" hidden id="divisionId" readonly class="form-control" />
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label for="positionId" class="col-form-label">Posisi</label>
-                                                            <input readonly id="positionName" class="form-control" />
-                                                            <input name="position_id" hidden id="positionId" readonly class="form-control" />
+                                                        <div class="col-md-12">
+                                                            <label for="employeeName1" class="col-form-label">Nama</label>
+                                                            <select name="letter[0][employee][]" id="employeeName1" multiple="multiple" class="form-select form-control">
+                                                                <option value="">- Pilih Karyawan -</option>
+                                                                @foreach ($employee as $item)
+                                                                    <option value="{{ $item->id }}">{{ $item->name . ' ( '. $item->position->name .' )' }}</option>
+                                                                @endforeach
+                                                            </select>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -149,13 +144,13 @@
                                                 <div class="col-md-8">
                                                     <div class="row">
                                                         <div class="col-md-6">
-                                                            <input type="date" class="form-control" id="leaveDate" name="date">
+                                                            <input type="date" class="form-control" id="leaveDate" name="letter[0][date]" value="{{ date('Y-m-d') }}">
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="input-group mb-3">
-                                                                <input type="number" class="form-control" name="hour" id="leaveHour" placeholder="Jam" aria-label="Username">
+                                                                <input type="number" class="form-control" name="letter[0][hour]" id="leaveHour" placeholder="Jam" aria-label="Username">
                                                                 <span class="input-group-text">:</span>
-                                                                <input type="number" class="form-control" placeholder="Menit" id="leaveMinute" name="minute" aria-label="Server">
+                                                                <input type="number" class="form-control" placeholder="Menit" id="leaveMinute" name="letter[0][minute]" aria-label="Server">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -169,10 +164,23 @@
                                                     </p>
                                                 </div>
                                                 <div class="col-md-8">
-                                                    <textarea name="notes" id="notes" cols="3" rows="3" class="form-control"></textarea>
+                                                    <textarea name="letter[0][notes]" id="notes" cols="3" rows="3" class="form-control"></textarea>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="targetRowForm"></div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="text-start">
+                                        <button class="btn btn-sm btn-light-success" type="button" onclick="addForm()">
+                                            <i class="fas fa-plus me-3"></i>
+                                            Tambah
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -211,15 +219,21 @@
 
 @push('scripts')
     <script>
+        let editUrl = "{{ route('leave-office.edit', ':id') }}";
+        let showUrl = "{{ route('leave-office.show', ':id') }}";
+        let storeUrl = "{{ route('leave-office.store') }}";
+        let detailUrl = "{{ route('leave-office.detail', ':id') }}";
+        let deleteUrl = "{{ route('leave-office.destroy', ':id') }}";
+        let updateUrl = "{{ route('leave-office.update', ':id') }}";
+
         var _columns = [{
             data: "id",
-            width: "0.5%",
-            orderable: false,
             visible: false
         },{
-            data: "employee"
-        }, {
-            data: "division"
+            data: "ticket_code"
+        },{
+            data: "employee",
+            width: "12%"
         }, {
             data: "date_time",
             width: "15%"
@@ -266,10 +280,12 @@
         $('#divisionFilter').on('change', function(e) {
             e.preventDefault();
             let val = $(this).val();
+            let route = "{{ route('position.getData', ':id') }}";
+            route = route.replace(':id', val);
 
             $.ajax({
                 type: 'GET',
-                url: "{{ url('/position/getData') }}" + "/" + val,
+                url: route,
                 success: function(res) {
                     let data = res.data;
                     let option = "<option value=''>- Pilih Posisi -</option>";
@@ -284,36 +300,100 @@
 
         $('#btnAdd').on('click', function(e) {
             e.preventDefault();
-
-            $.ajax({
-                type: "GET",
-                url: "{{ route('employees.getData') }}",
-                dataType: 'json',
-                success: function(res) {
-                    let data = res.data;
-                    let option = "<option value=''>- Pilih Karyawan -</option>";
-                    for (let a = 0; a < data.length; a++) {
-                        option += `<option value="${data[a].id}">${data[a].name}</option>`;
-                    }
-                    modal.modal('show');
-                    $('#employeeName').html(option);
-                    $('#employeeName').select2({
-                        dropdownParent: $('#modalLeaveOffice')
-                    });
-                    $('#modalTitle').text('Tambah Data Izin');
-                    form.attr('action', "{{ route('leave-office.store') }}");
-                    form.attr('method', 'POST');
-                },
-                error: function(err) {
-                    handleError(err);
-                }
+            $('#employeeName1').select2({
+                dropdownParent: $('#modalLeaveOffice')
             });
+            $('#modalTitle').text('Tambah Data Izin');
+            form.attr('action', storeUrl);
+            form.attr('method', 'POST');
+            modal.modal('show');
         });
 
+        function addForm() {
+            let row = $('.rowForm');
+            let rowLen = row.length;
+            let form = `<div style="position: relative;" id="rowForm${rowLen+1}">
+                            <img src="{{ asset('images/delete-icon.png') }}"  onclick="deleteRowForm(${rowLen+1})"
+                                style="width: 35px; height: auto; position: absolute; top: -10px; right: -10px; z-index: 100; cursor: pointer;" alt="">
+                            <div class="row mb-5 rowForm">
+                                <div class="col">
+                                    <div class="card card-flush bg-secondary">
+                                        <div class="card-body">
+                                            <div class="form-group mb-5 row">
+                                                <div class="col-md-4 d-flex justify-content-start align-items-center">
+                                                    <div>
+                                                        <label for="" class="col-form-label p-0">Data Karyawan</label>
+                                                        <p class="mb-0" style="color: #A3A3A3;">
+                                                            Pilih Nama Karyawan. <br> Divisi dan Posisi akan otomatis terisi
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label for="employeeName${rowLen+1}" class="col-form-label">Nama</label>
+                                                            <select name="letter[${rowLen}][employee][]" id="employeeName${rowLen+1}" multiple="multiple" class="form-select form-control">
+                                                                <option value="">- Pilih Karyawan -</option>
+                                                                @foreach ($employee as $item)
+                                                                    <option value="{{ $item->id }}">{{ $item->name . ' ( '. $item->position->name .' )' }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-5 row" style="margin-top: 30px;">
+                                                <div class="col-md-4">
+                                                    <label for="" class="col-form-label p-0">Tanggal / Jam Izin</label>
+                                                    <p class="mb-0" style="color: #A3A3A3;">
+                                                        Jam dalam format <b>24 jam</b> dan tidak boleh di awali dengan angka '0'
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <input type="date" class="form-control" id="leaveDate" name="letter[${rowLen}][date]" value="{{ date('Y-m-d') }}">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="input-group mb-3">
+                                                                <input type="number" class="form-control" name="letter[${rowLen}][hour]" id="leaveHour" placeholder="Jam" aria-label="Username">
+                                                                <span class="input-group-text">:</span>
+                                                                <input type="number" class="form-control" placeholder="Menit" id="leaveMinute" name="letter[${rowLen}][minute]" aria-label="Server">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-5 row" style="margin-top: 30px;">
+                                                <div class="col-md-4">
+                                                    <label for="" class="col-form-label p-0">Alasan Izin</label>
+                                                    <p class="mb-0" style="color: #A3A3A3;">
+                                                        Alasan karyawan meninggalkan kantor
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <textarea name="letter[${rowLen}][notes]" id="notes" cols="3" rows="3" class="form-control"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+
+            $('#targetRowForm').append(form);
+            $(`#employeeName${rowLen+1}`).select2();
+        }
+
+        function deleteRowForm(ids) {
+            $(`#rowForm${ids}`).remove();
+        }
+
         function detail(id) {
+            detailUrl = detailUrl.replace(':id', id);
             $.ajax({
                 type: "GET",
-                url: "{{ url('/permission/leave-office/detail') }}" + "/" + id,
+                url: detailUrl,
                 dataType: "json",
                 success: function(res) {
                     let view = res.data.view;
@@ -325,33 +405,6 @@
                     handleError(err);
                 }
             })
-        }
-
-        function changeEmployee() {
-            let val = $('#employeeName').val();
-            if (val == ""){
-                $('#divisionId').val('');
-                $('#divisionName').val('');
-                $('#positionId').val('');
-                $('#positionName').val('');
-            } else {
-                $.ajax({
-                    type: "GET",
-                    url: "{{ url('/employees/getDivision') }}" + "/" + val,
-                    dataType: "json",
-                    success: function(res) {
-                        console.log(res);
-                        $('#divisionId').val(res.data.division.id);
-                        $('#divisionName').val(res.data.division.name);
-                        $('#positionId').val(res.data.position.id);
-                        $('#positionName').val(res.data.position.name);
-                    },
-                    error: function(err) {
-                        console.error('error', err);
-                        handleError(err);
-                    }
-                });
-            }
         }
 
         function save() {
@@ -386,20 +439,25 @@
         }
 
         function edit(id) {
-            let url = '{{ url('/permission/leave-office/') }}' + '/' + id;
-
+            let editUrl = "{{ route('leave-office.edit', ':id') }}";
+            let showUrl = "{{ route('leave-office.show', ':id') }}";
+            let updateUrl = "{{ route('leave-office.update', ':id') }}";
+            editUrl = editUrl.replace(':id', id);
+            showUrl = showUrl.replace(':id', id);
+            updateUrl = updateUrl.replace(':id', id);
             $.ajax({
                 type: "GET",
-                url: "{{ url("/permission/leave-office") }}" + "/" + id,
+                url: showUrl,
                 dataType: 'json',
                 success: function(res) {
                     console.log(res);
                     elem.attr('disabled', false);
                     elem.text('Simpan');
-                    form.attr('action', url);
+                    form.attr('action', updateUrl);
                     form.attr('method', 'PUT');
                     modal.modal('show');
                     let employees = res.data.employee;
+                    let currentEmployee = res.data.currentEmployee;
                     let data = res.data.data;
                     let option = "<option value=''>- Pilih Karyawan -</option>";
                     let selected = "";
@@ -409,17 +467,13 @@
                         } else {
                             selected = "";
                         }
-                        console.log(selected);
-                        option += `<option ${selected} value="${employees[a].id}">${employees[a].name}</option>`;
+                        option += `<option ${selected} value="${employees[a].id}">${employees[a].name} ( ${employees[a].position.name} )</option>`;
                     }
                     $('#employeeName').html(option);
+                    $('#employeeName').val(currentEmployee);
                     $('#employeeName').select2({
                         dropdownParent: $('#modalLeaveOffice')
                     });
-                    $('#divisionId').val(data.division.id);
-                    $('#divisionName').val(data.division.name);
-                    $('#positionId').val(data.position.id);
-                    $('#positionName').val(data.position.name);
                     $('#leaveHour').val(res.data.hour)
                     $('#leaveMinute').val(res.data.minute)
                     $('#leaveDate').val(res.data.date)
@@ -427,12 +481,14 @@
                     $('#modalTitle').text('Edit Data Izin');
                 },
                 error: function(err) {
+                    console.log(err);
                     handleError(err, elem);
                 }
             })
         }
 
         function deleteLeave(id) {
+            let deleteUrl = "{{ route('leave-office.destroy', ':id') }}";
             Swal.fire({
                 title: 'Apakah anda yakin ingin menghapus divisi ini?',
                 showDenyButton: true,
@@ -442,9 +498,10 @@
             }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
+                    deleteUrl = deleteUrl.replace(':id', id);
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ url('/permission/leave-office/') }}" + "/" + id,
+                        url: deleteUrl,
                         success: function(res) {
                             iziToast['success']({
                                 message: 'Posisi berhasil di simpan',

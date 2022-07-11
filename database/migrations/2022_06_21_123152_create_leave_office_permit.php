@@ -15,9 +15,8 @@ return new class extends Migration
     {
         Schema::create('leave_office_permit', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->integer('employee_id');
-            $table->integer('position_id')->nullable();
-            $table->integer('division_id')->nullable();
+            $table->string('ticket_code');
+            $table->json('employee_id');
             $table->timestamp('leave_date_time')->nullable();
             $table->text('notes')->nullable();
             $table->integer('approved_by');

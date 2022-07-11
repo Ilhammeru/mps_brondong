@@ -21,6 +21,8 @@
         "sass-loader": "^11.0.1"
     },
     "dependencies": {
+        "dotenv": "^16.0.1",
+        "fs": "^0.0.1-security",
         "gasparesganga-jquery-loading-overlay": "^2.1.7",
         "izitoast": "^1.4.0",
         "jquery": "^3.6.0"

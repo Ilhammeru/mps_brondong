@@ -1,12 +1,12 @@
 <div class="row">
     <div class="col">
         <div class="text-center">
+            <h3 class="mb-5">{{ $data->ticket_code }}</h3>
+            @for($a = 0; $a < count($employee); $a++)
             <p class="mb-0">
-                <b>{{ ucwords($data->employee->name) . ' (' .  $data->division->name . ' - ' . $data->position->name . ')' }}</b>
+                <b>{{ ucwords($employee[$a]['name']) . ' ( '. $employee[$a]['position'] .' ) ' }}</b>
             </p>
-            <p class="mb-1">
-                <b>{{ $data->employee->employee_id }}</b>
-            </p>
+            @endfor
             <div class="qrcode d-flex align-items-center justify-content-center" style="margin: 20px 0 20px 0;">
                 {!! QrCode::size(250)->generate(url('/leave-office/confirm/br/' . $data->id)); !!}
             </div>

@@ -123,7 +123,11 @@ class EmployeeController extends Controller
     public function getData() {
         try {
             $id = Auth::id();
-            $data = Employee::where(['is_active' => 1])->where('id', '!=', $id)->get();
+            $data = Employee::select(['id', 'name', 'position_id'])
+                ->with(['position:id,name'])
+                ->where(['is_active' => 1])
+                ->where('id', '!=', $id)
+                ->get();
             return sendResponse($data);
         } catch (\Throwable $th) {
             return sendResponse(
