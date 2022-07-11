@@ -32,16 +32,19 @@
     <table style="width:100%;border-spacing:0;border-collapse:collapse;margin:0 auto">
         <tbody>
             <tr>
-                <td>
+                <td style="width: 30%">
                     <div>
                         <p style="margin-bottom: 30px !important;">Dibuat Oleh</p>
-                        <p>{{ $data->approvedBy->name }}</p>
+                        <p style="margin-bottom: 0 !important; border-bottom: 1px solid black;">{{ $data->approvedBy->name }}</p>
+                        <p style="margin-top: 0 !important;">{{ $data->approvedBy->position->name }}</p>
                     </div>
                 </td>
-                <td>
+                <td style="width: 40%"></td>
+                <td style="width: 30%">
                     <div>
                         <p style="margin-bottom: 30px !important;">Disetujui Oleh</p>
-                        <p>MANAGER HRD</p>
+                        <p style="margin-bottom: 0 !important; border-bottom: 1px solid black;">MASTAHTALIFUN, S.Pd.</p>
+                        <p style="margin-top: 0 !important;">MANAGER HRD</p>
                     </div>
                 </td>
             </tr>

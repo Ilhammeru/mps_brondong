@@ -380,7 +380,7 @@ class PermissionLeaveOfficeController extends Controller
             $check = User::where('username', $username)->first();
             if ($check) {
                 if (Hash::check($password, $check->password)) {
-                    $data = PermissionLeaveOffice::with(['approvedBy'])
+                    $data = PermissionLeaveOffice::with(['approvedBy:id,name,position_id', 'approvedBy.position:id,name'])
                         ->where('id', $id)
                         ->first();
                     $employees = json_decode($data->employee_id, TRUE);
