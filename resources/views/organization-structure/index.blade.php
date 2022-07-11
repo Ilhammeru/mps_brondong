@@ -81,16 +81,15 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-5">
                         <h3>Status</h3>
-                        <button class="btn btn-light-primary" type="button" onclick="addForm('employeeStatus')">
+                        {{-- <button class="btn btn-light-primary" type="button" onclick="addForm('employeeStatus')">
                             <i class="fas fa-plus"></i>
-                        </button>
+                        </button> --}}
                     </div>
                         <table class="table table-striped table-border" id="tableEmployeeStatus">
                             <thead>
                                 <tr>
                                     <th></th>
                                     <th>Nama</th>
-                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -198,8 +197,6 @@
             searchable: false
         }, {
             data: "name"
-        }, {
-            data: 'action'
         }];
     
         let tablesEmployeeStatus = $("#tableEmployeeStatus").DataTable({

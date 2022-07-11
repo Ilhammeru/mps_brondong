@@ -32,12 +32,7 @@ class EmployeeStatusController extends Controller
             ->editColumn('name',function($data) {
                 return ucwords($data->name);
             })
-            ->addColumn('action', function($data) {
-                $param = $data->id . ", 'employeeStatus'";
-                return '<span class="text-info" style="cursor: pointer;" onclick="edit('. $param .')"><i class="fas fa-edit"></i></span>
-                <span class="text-info" style="cursor: pointer;" onclick="deleteItem('. $param .')"><i class="fas fa-trash"></i></span>';
-            })
-            ->rawColumns(['action', 'name'])
+            ->rawColumns(['name'])
             ->make(true);
     }
 
