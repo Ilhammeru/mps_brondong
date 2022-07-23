@@ -9,6 +9,7 @@ use App\Http\Controllers\OrganizationStructureController;
 use App\Http\Controllers\PermissionLeaveOfficeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\RegionController;
+use App\Http\Controllers\TrainingController;
 use App\Models\PermissionLeaveOffice;
 use Illuminate\Support\Facades\Route;
 
@@ -60,6 +61,15 @@ Route::get('/password-request', function() {
 
 Route::middleware(['auth'])->group(function() {
     Route::middleware('role:admin')->group(function() {
+        // begin:training
+        Route::post('/trainings/tags', [TrainingController::class, 'storeTag'])->name('trainings.tags.store');
+        Route::get('/trainings/tags/{id}', [TrainingController::class, 'listTag'])->name('trainings.tags.list');
+        Route::get('trainings/json', [TrainingController::class, 'json'])->name('trainings.json');
+        Route::post('/trainings/{id}', [TrainingController::class, 'update'])->name('trainings.update');
+        Route::get('/trainings/questionnaire/{trainingId}', [TrainingController::class, 'showFormQuestionnaire'])->name('trainings.form.questionnaire');
+        Route::resource('trainings', TrainingController::class);
+        // end:training
+
         // begin::division
         Route::get('/division/json', [DivisionController::class, 'json'])->name('division.json');
         Route::get('/division/get', [DivisionController::class, 'getData'])->name('division.getData');
@@ -93,8 +103,10 @@ Route::middleware(['auth'])->group(function() {
         // begin::employee
         Route::get('/employees/detail/getData', [EmployeeController::class, 'getData'])->name("employees.getData");
         Route::get('/employees/getDivision/{id}', [EmployeeController::class, 'getDivision'])->name("employees.getDivision");
-        Route::get('/employees/data/json', [EmployeeController::class, 'json'])->name("employees.json");
+        Route::get('/employees/data/json/{type}', [EmployeeController::class, 'json'])->name("employees.json");
         Route::get('/employees/create/data', [EmployeeController::class, 'create'])->name("employees.create");
+        Route::get('/employees/template', [EmployeeController::class, 'downloadTemplate'])->name("employees.download.template");
+        Route::post('/employees/import', [EmployeeController::class, 'import'])->name('employees.import');
         Route::post('/employees/{id}', [EmployeeController::class, 'update'])->name("employees.update");
         Route::resource('employees', EmployeeController::class);
         // end::employee

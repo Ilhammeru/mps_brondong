@@ -130,6 +130,14 @@
                             <span class="menu-title">Dashboard</span>
                         </a>
                     </div>
+                    <div class="menu-item">
+                        <a class="menu-link {{ menuActive('trainings.*') }}" href="{{ route('trainings.index') }}">
+                            <span class="menu-icon">
+                                <img src="{{ asset('images/training.png') }}" style="width: 20px; height: auto;" alt="">
+                            </span>
+                            <span class="menu-title">Training</span>
+                        </a>
+                    </div>
 
                     {{-- begin::u --}}
                     <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ menuShow(['division.index', 'position.index', 'employees.*', 'organization-structure.*']) }}">

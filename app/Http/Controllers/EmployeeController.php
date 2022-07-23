@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\EmployeeTemplateExport;
+use App\Imports\EmployeeImport;
 use App\Models\District;
 use App\Models\Division;
 use App\Models\Employee;
@@ -14,11 +16,13 @@ use App\Models\Province;
 use App\Models\Regency;
 use App\Models\Vaccine;
 use App\Models\Village;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EmployeeController extends Controller
 {
@@ -81,9 +85,10 @@ class EmployeeController extends Controller
         return view('employees.create', compact('pageTitle', 'employeeStatus', 'provinces', 'vaccines', 'divisions'));
     }
 
-    public function json() {
+    public function json($type) {
+        $where = "is_active = $type";
         $data = Employee::with(['userVaccine.vaccine', 'division', 'position'])
-            ->where('is_active', TRUE)
+            ->whereRaw($where)
             ->where('id', '!=', Auth::id())
             ->get();
         return DataTables::of($data)
@@ -109,10 +114,134 @@ class EmployeeController extends Controller
                 }
             })
             ->addColumn('action', function($data) {
-                return '<a href="'. route('employees.edit', $data->id) .'" class="text-info me-3"><i class="fa fa-edit"></i></a>';
+                if ($data->is_active == 1) {
+                    return '<a href="'. route('employees.edit', $data->id) .'" class="text-info me-3"><i class="fa fa-edit"></i></a>
+                        <span style="cursor: pointer;" onclick="deleteData('. $data->id .')"><i class="fas fa-trash"></i></span>';
+                }
             })
             ->rawColumns(['action', 'status_vaccine', 'name', 'position', 'working_status'])
             ->make(true);
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new EmployeeTemplateExport, 'template.xlsx');
+    }
+
+    public function import(Request $request) {
+        if ($request->has('file')) {
+            $file = $request->file('file');
+            $ext = $file->getClientOriginalExtension();
+            $name = 'import_' . date('YmdHis') . '.' . $ext;
+            $file->storeAs('employee/import', $name, 'public');
+            $sheet = 'Master';
+            $filetype = 'Xlsx';
+            /**  Create a new Reader of the type defined in $inputFileType  **/
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($filetype);
+            /**  Advise the Reader of which WorkSheets we want to load  **/
+            $reader->setLoadSheetsOnly($sheet);
+            /**  Load $inputFileName to a Spreadsheet Object  **/
+            $spreadsheet = $reader->load('employee/import/' . $name);
+            $arr = $spreadsheet->getActiveSheet()
+                ->rangeToArray(
+                    'A4:J10',
+                    '',
+                    TRUE,
+                    TRUE,
+                    FALSE,
+                );
+            try {
+                $newArr = [];
+                for ($a = 0; $a < count($arr); $a++) {
+                    for ($b =0; $b < count($arr[$a]); $b++) {
+                        if ($arr[$a][$b] != '') {
+                            $name = $arr[$a][1];
+                            $nickname = explode(' ', $name)[0];
+                            $dataPosition = $arr[$a][5];
+                            $dataDivision = $arr[$a][6];
+                            $dataEmpStatus = $arr[$a][7];
+                            $dataEmpId = $arr[$a][0];
+                            $dataEmail = $arr[$a][2];
+                            $dataNik = $arr[$a][4];
+                            $dataPhone = $arr[$a][3];
+
+                            // validation
+                            if ($name == '' || $dataPosition == ''|| $dataDivision == ''
+                                || $dataEmpStatus == '' || $dataEmpId == '' || $dataEmail == ''
+                                || $dataNik == '' || $dataPhone == "") {
+                                return sendResponse(
+                                    ['error' => 'Pastikan semua kolom pada template sudah terisi'],
+                                    'FAILED',
+                                    500
+                                );
+                            }
+
+                            $position = Position::select('id', 'name')
+                                ->where('name', $arr[$a][5])
+                                ->first();
+                            if ($position == NULL) {
+                                return sendResponse(
+                                    ['error' => 'Nama Jabatan tidak terdaftar'],
+                                    'FAILED',
+                                    500
+                                );
+                            }
+                            $division = Division::select('id', 'name', 'department_id')
+                                ->where('name', $arr[$a][6])
+                                ->first();
+                            if ($division == NULL) {
+                                return sendResponse(
+                                    ['error' => 'Nama Divisi tidak terdaftar'],
+                                    'FAILED',
+                                    500
+                                );
+                            }
+                            $employeeStatus = EmployeeStatus::select('id', 'name')
+                                ->where('name', $arr[$a][7])
+                                ->first();
+                            if ($employeeStatus == NULL) {
+                                return sendResponse(
+                                    ['error' => 'Nama Status Karyawan tidak terdaftar'],
+                                    'FAILED',
+                                    500
+                                );
+                            }
+                            $newArr[$a] = [
+                                'employee_id' => (string)$arr[$a][0],   
+                                'name'  => $arr[$a][1],
+                                'aliases' => $nickname,
+                                'email' => $arr[$a][2],
+                                'nik' => $arr[$a][4],
+                                'phone' => $arr[$a][3],
+                                'position_id' => $position->id,
+                                'division_id' => $division->id,
+                                'department_id' => $division->department_id,
+                                'employee_status_id' => $employeeStatus->id,
+                                'bank_name' => $arr[$a][8],
+                                'bank_account_number' => $arr[$a][9],
+                                'bank_account_name' => $name
+                            ];
+                        }
+                    }
+                }
+                // save to database
+                $updatedColumn = ['name', 'aliases', 'email', 'nik', 'phone',
+                'position_id', 'division_id', 'department_id', 'employee_status_id',
+                'bank_name', 'bank_account_number', 'bank_account_name'];
+                Employee::upsert(
+                    $newArr,
+                    ['employee_id'],
+                    $updatedColumn
+                );
+                return sendResponse([]);
+            } catch (\Throwable $th) {
+                return sendResponse(
+                    ['error' => $th->getMessage()],
+                    'FAILED',
+                    500
+                );
+            }
+        }
     }
 
     /**
@@ -628,6 +757,19 @@ class EmployeeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            Employee::where('id', $id)
+                ->update([
+                    'deleted_at' => Carbon::now(),
+                    'is_active' => 0
+                ]);
+            return sendResponse([]);
+        } catch (\Throwable $th) {
+            return sendResponse(
+                ['error' => $th->getMessage()],
+                'FAILED',
+                500
+            );
+        }
     }
 }

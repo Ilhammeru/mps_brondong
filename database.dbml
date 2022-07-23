@@ -1,0 +1,38 @@
+project mps_brondong {
+    database_type: 'mysql',
+    Note: 'database for mps brondong'
+}
+
+Table project {
+    id integer [pk, increment]
+    name string
+    created_at timestamp
+    updated_at timestamp
+}
+
+Table task {
+    id integer [pk, increment]
+    name string [not null]
+    project_id integer [not null]
+    note text
+    deadline timestamp
+    start_date timestamp
+    user_id json
+    status tinyinteger [not null, default: 1, note: '1 for todo, 2 for progress 3 for in review, 4 for revise, 5 for done']
+    detail_task json [note: '[{checked_by: 1, checked_date: 2022-07-11, note: '', status: REVISI/LOLOS}]']
+    parent_id integer
+    created_at timestamp
+    updated_at timestamp
+}
+
+Table revise_task {
+    id integer [pk, increment]
+    task_id integer
+    revise_date timestamp
+    deadline_date timestamp
+    note text
+    checked_by integer [note: 'Pemberi revisi']
+    status tinyinteger [note: '1 for ongoing, 2 for done']
+    created_at timestamp
+    updated_at timestamp
+}

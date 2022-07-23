@@ -60,7 +60,7 @@ class EmployeeSeeder extends Seeder
                 'bank_name' => 'BNI'
             ],
             [
-                'employee_id' => '12487837343',
+                'employee_id' => '12487837344',
                 'name' => 'Ilham Meru Gumilang',
                 'aliases' => 'ilham',
                 'email' => 'gumilang.dev@gmail.com',
@@ -101,7 +101,7 @@ class EmployeeSeeder extends Seeder
                 'bank_name' => 'BNI'
             ],
             [
-                'employee_id' => '12487837343',
+                'employee_id' => '12487837345',
                 'name' => 'Pak Yit',
                 'aliases' => 'pak yit',
                 'email' => 'pakyit@gmail.com',
